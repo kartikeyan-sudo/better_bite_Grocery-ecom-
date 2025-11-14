@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+const RAW_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000'
+const BASE_URL = RAW_BASE.replace(/\/+$/, '')
 
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('authToken')
@@ -13,7 +14,8 @@ export async function apiFetch(path, options = {}) {
     options.body = JSON.stringify(options.body)
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const url = `${BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
+  const res = await fetch(url, {
     ...options,
     headers
   })
