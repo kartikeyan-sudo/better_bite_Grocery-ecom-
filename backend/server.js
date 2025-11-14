@@ -21,23 +21,7 @@ const allowedOrigins = allowedOriginsEnv.split(',').map(s => s.trim()).filter(Bo
 
 console.log('CORS allowed origins:', allowedOrigins.length ? allowedOrigins : '[none - permissive]')
 
-if (allowedOrigins.length === 0) {
-  // No origins specified: allow all (useful for quick dev), but consider setting CORS_ORIGIN in production
-  app.use(cors())
-} else {
-  app.use(cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (e.g., mobile apps, curl)
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        console.log('CORS allow:', origin)
-        return callback(null, true)
-      }
-      console.warn('CORS reject:', origin)
-      return callback(new Error('CORS policy: This origin is not allowed'))
-    }
-  }))
-}
+app.use(cors())
 
 app.use(express.json())
 
