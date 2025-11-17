@@ -144,9 +144,12 @@ export default function Cart() {
       <header className="cart-header">
         <div className="cart-header-content">
           <button className="back-btn" onClick={() => navigate('/dashboard')}>
-            ← Back to Shopping
+            ← Back
           </button>
           <h1>Shopping Cart</h1>
+          <button className="refresh-btn" onClick={() => window.location.reload()}>
+            🔄
+          </button>
         </div>
       </header>
 

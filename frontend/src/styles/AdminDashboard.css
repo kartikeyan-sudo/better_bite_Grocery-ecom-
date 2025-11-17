@@ -1265,6 +1265,28 @@
   cursor: not-allowed;
 }
 
+/* Upload Button */
+.upload-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(72, 187, 120, 0.25);
+  border: none;
+  text-align: center;
+}
+
+.upload-btn:hover {
+  background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.35);
+}
+
 @media (max-width: 768px) {
   .contact-form-container {
     padding: 0;

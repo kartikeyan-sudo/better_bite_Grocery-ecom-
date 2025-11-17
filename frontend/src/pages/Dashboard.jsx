@@ -263,9 +263,6 @@ export default function Dashboard() {
                 <Link to="/orders" className="dropdown-item">
                   <span>📦</span> My Orders
                 </Link>
-                <Link to="/settings" className="dropdown-item">
-                  <span>⚙️</span> Settings
-                </Link>
                 <div className="dropdown-divider"></div>
                 <button onClick={handleLogout} className="dropdown-item logout-btn">
                   <span>🚪</span> Logout

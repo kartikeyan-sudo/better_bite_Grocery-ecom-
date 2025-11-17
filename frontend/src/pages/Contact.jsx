@@ -36,9 +36,11 @@ export default function Contact() {
     <div className="contact-page">
       <header className="contact-header">
         <div className="header-content">
-          <Link to="/dashboard" className="back-btn">← Back to Dashboard</Link>
+          <Link to="/dashboard" className="back-btn">← Back</Link>
           <h1>Contact Us</h1>
-          <p>We'd love to hear from you!</p>
+          <button className="refresh-btn" onClick={() => window.location.reload()}>
+            🔄
+          </button>
         </div>
       </header>
 
