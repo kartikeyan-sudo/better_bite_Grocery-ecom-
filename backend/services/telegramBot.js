@@ -18,11 +18,23 @@ const initBot = () => {
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true'
     
     bot = new TelegramBot(BOT_TOKEN, { 
-      polling: isProduction ? true : false 
+      polling: isProduction ? {
+        interval: 1000,
+        autoStart: true,
+        params: {
+          timeout: 10
+        }
+      } : false 
     })
     
     if (isProduction) {
       console.log('✅ Telegram bot initialized with polling (Production)')
+      
+      // Handle polling errors gracefully
+      bot.on('polling_error', (error) => {
+        console.error('⚠️ Telegram polling error:', error.message)
+        // Don't crash on polling errors, just log them
+      })
     } else {
       console.log('✅ Telegram bot initialized without polling (Development - notifications only)')
     }
