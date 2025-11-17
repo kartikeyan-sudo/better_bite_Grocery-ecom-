@@ -75,6 +75,16 @@ export const CartProvider = ({ children }) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id)
       
+      // Check purchase limit if set
+      if (product.purchaseLimit) {
+        const currentQuantity = existingItem ? existingItem.quantity : 0
+        if (currentQuantity >= product.purchaseLimit) {
+          // Show limit reached notification
+          alert(`Purchase limit reached! Maximum ${product.purchaseLimit} ${product.purchaseLimit === 1 ? 'item' : 'items'} allowed per customer for ${product.name}`)
+          return prevCart
+        }
+      }
+      
       if (existingItem) {
         return prevCart.map(item =>
           item.id === product.id

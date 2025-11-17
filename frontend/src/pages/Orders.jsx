@@ -105,14 +105,14 @@ export default function Orders() {
       </header>
 
       {/* Filters */}
-      <div className="orders-container" style={{ marginTop: '12px' }}>
-        <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="all">All</option>
+      <div className="orders-container">
+        <div className="orders-filters">
+          <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All Orders</option>
             <option value="active">Active (Pending/Processing/Shipped)</option>
             <option value="past">Past (Delivered/Cancelled)</option>
           </select>
-          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
+          <select className="filter-select" value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)}>
             <option value="all">All time</option>
             <option value="30">Last 30 days</option>
             <option value="90">Last 90 days</option>
@@ -158,7 +158,11 @@ export default function Orders() {
                   {order.items.map((item, index) => (
                     <div key={index} className="order-item">
                       <div className="order-item-image">
-                        <span className="order-item-emoji">{item.image || '📦'}</span>
+                        {String(item.image).startsWith('http') ? (
+                          <img src={item.image} alt={item.name} className="order-item-img" />
+                        ) : (
+                          <span className="order-item-emoji">{item.image || '📦'}</span>
+                        )}
                       </div>
                       <div className="order-item-details">
                         <h4>{item.name}</h4>

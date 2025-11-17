@@ -93,10 +93,25 @@ export default function AdminOrders() {
                   </div>
                 </div>
 
+                {order.shippingAddress && (
+                  <div className="shipping-address-admin">
+                    <strong>📍 Shipping Address:</strong>
+                    <p>{order.shippingAddress.fullName} • {order.shippingAddress.phone}</p>
+                    <p>{order.shippingAddress.address}</p>
+                    <p>{order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}</p>
+                  </div>
+                )}
+
                 <div className="order-items-admin">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="order-item-admin">
-                      <span className="item-emoji">{item.image || '📦'}</span>
+                      <div className="item-image">
+                        {String(item.image).startsWith('http') ? (
+                          <img src={item.image} alt={item.name} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6 }} />
+                        ) : (
+                          <span style={{ fontSize: 28 }}>{item.image || '📦'}</span>
+                        )}
+                      </div>
                       <span className="item-name">{item.name}</span>
                       <span className="item-qty">x{item.quantity}</span>
                       <span className="item-price">₹{item.price * item.quantity}</span>

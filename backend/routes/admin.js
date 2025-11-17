@@ -4,6 +4,8 @@ const adminAuth = require('../middleware/adminAuth')
 const User = require('../models/User')
 const Product = require('../models/Product')
 const Order = require('../models/Order')
+const Category = require('../models/Category')
+const { sendStatusUpdate } = require('../services/telegramBot')
 
 // GET /api/admin/stats - Dashboard stats
 router.get('/stats', adminAuth, async (req, res) => {
@@ -70,10 +72,18 @@ router.get('/products', adminAuth, async (req, res) => {
 // POST /api/admin/products - Create product
 router.post('/products', adminAuth, async (req, res) => {
   try {
-    const { name, category, image, price, weight, quantity, description, inStock } = req.body
+    const { name, category, image, price, mrp, weight, quantity, description, inStock, recommended, purchaseLimit } = req.body
     
     if (!name || !category || !price) {
       return res.status(400).json({ error: 'Missing required fields' })
+    }
+
+    if (mrp && Number(mrp) < Number(price)) {
+      return res.status(400).json({ error: 'MRP must be greater than or equal to price' })
+    }
+
+    if (purchaseLimit && Number(purchaseLimit) < 1) {
+      return res.status(400).json({ error: 'Purchase limit must be at least 1' })
     }
 
     const product = new Product({
@@ -81,10 +91,13 @@ router.post('/products', adminAuth, async (req, res) => {
       category,
       image: image || '',
       price,
+      mrp,
       weight: weight || '',
       quantity: quantity || '',
       description: description || '',
-      inStock: inStock !== undefined ? inStock : true
+      inStock: inStock !== undefined ? inStock : true,
+      recommended: recommended || false,
+      purchaseLimit: purchaseLimit || null
     })
 
     await product.save()
@@ -98,11 +111,19 @@ router.post('/products', adminAuth, async (req, res) => {
 // PUT /api/admin/products/:id - Update product
 router.put('/products/:id', adminAuth, async (req, res) => {
   try {
-    const { name, category, image, price, weight, quantity, description, inStock } = req.body
+    const { name, category, image, price, mrp, weight, quantity, description, inStock, recommended, purchaseLimit } = req.body
+
+    if (mrp && Number(mrp) < Number(price)) {
+      return res.status(400).json({ error: 'MRP must be greater than or equal to price' })
+    }
+
+    if (purchaseLimit && Number(purchaseLimit) < 1) {
+      return res.status(400).json({ error: 'Purchase limit must be at least 1' })
+    }
     
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, category, image, price, weight, quantity, description, inStock },
+      { name, category, image, price, mrp, weight, quantity, description, inStock, recommended, purchaseLimit: purchaseLimit || null },
       { new: true, runValidators: true }
     )
 
@@ -146,6 +167,12 @@ router.put('/orders/:id/status', adminAuth, async (req, res) => {
       return res.status(400).json({ error: 'Invalid status' })
     }
 
+    // Get old order to track status change
+    const oldOrder = await Order.findById(req.params.id)
+    if (!oldOrder) return res.status(404).json({ error: 'Order not found' })
+    
+    const oldStatus = oldOrder.status
+
     const order = await Order.findByIdAndUpdate(
       req.params.id,
       { status },
@@ -153,7 +180,154 @@ router.put('/orders/:id/status', adminAuth, async (req, res) => {
     ).populate('userId', 'name email')
 
     if (!order) return res.status(404).json({ error: 'Order not found' })
+    
+    // Send Telegram notification about status change
+    if (oldStatus !== status) {
+      await sendStatusUpdate(order, oldStatus)
+    }
+    
     res.json(order)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// ===== CATEGORY ROUTES =====
+
+// GET /api/admin/categories - Get all categories
+router.get('/categories', adminAuth, async (req, res) => {
+  try {
+    const categories = await Category.find().sort({ displayOrder: 1, name: 1 })
+    res.json(categories)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// POST /api/admin/categories - Create category
+router.post('/categories', adminAuth, async (req, res) => {
+  try {
+    const { name, icon, bannerImage, displayOrder, isActive } = req.body
+    
+    if (!name) {
+      return res.status(400).json({ error: 'Category name is required' })
+    }
+
+    const existing = await Category.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') } })
+    if (existing) {
+      return res.status(400).json({ error: 'Category already exists' })
+    }
+
+    const category = new Category({
+      name,
+      icon: icon || '📦',
+      bannerImage: bannerImage || '',
+      displayOrder: displayOrder || 0,
+      isActive: isActive !== undefined ? isActive : true
+    })
+
+    await category.save()
+    res.status(201).json(category)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// PUT /api/admin/categories/:id - Update category
+router.put('/categories/:id', adminAuth, async (req, res) => {
+  try {
+    const { name, icon, bannerImage, displayOrder, isActive } = req.body
+    
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      { name, icon, bannerImage, displayOrder, isActive },
+      { new: true, runValidators: true }
+    )
+
+    if (!category) return res.status(404).json({ error: 'Category not found' })
+    res.json(category)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// DELETE /api/admin/categories/:id - Delete category
+router.delete('/categories/:id', adminAuth, async (req, res) => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id)
+    if (!category) return res.status(404).json({ error: 'Category not found' })
+    res.json({ success: true, message: 'Category deleted' })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// ==================== CONTACT INFO ROUTES ====================
+
+// GET /api/admin/contact - Get contact info
+router.get('/contact', adminAuth, async (req, res) => {
+  try {
+    const Contact = require('../models/Contact')
+    let contact = await Contact.findOne()
+    
+    if (!contact) {
+      // Return empty structure if no contact exists
+      contact = {}
+    }
+    
+    res.json(contact)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// PUT /api/admin/contact - Update contact info (creates if doesn't exist)
+router.put('/contact', adminAuth, async (req, res) => {
+  try {
+    const Contact = require('../models/Contact')
+    const {
+      businessName, email, phone, alternatePhone, whatsapp,
+      address, city, state, pincode, country,
+      mondayToFriday, saturday, sunday,
+      facebook, instagram, twitter,
+      googleMapUrl, description
+    } = req.body
+    
+    // Validation
+    if (!businessName || !email || !phone || !address || !city || !state || !pincode) {
+      return res.status(400).json({ error: 'Required fields: businessName, email, phone, address, city, state, pincode' })
+    }
+    
+    let contact = await Contact.findOne()
+    
+    if (contact) {
+      // Update existing
+      Object.assign(contact, {
+        businessName, email, phone, alternatePhone, whatsapp,
+        address, city, state, pincode, country,
+        mondayToFriday, saturday, sunday,
+        facebook, instagram, twitter,
+        googleMapUrl, description
+      })
+      await contact.save()
+    } else {
+      // Create new
+      contact = await Contact.create({
+        businessName, email, phone, alternatePhone, whatsapp,
+        address, city, state, pincode, country,
+        mondayToFriday, saturday, sunday,
+        facebook, instagram, twitter,
+        googleMapUrl, description
+      })
+    }
+    
+    res.json(contact)
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Server error' })

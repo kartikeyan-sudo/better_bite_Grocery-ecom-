@@ -5,6 +5,7 @@ import '../styles/AdminDashboard.css'
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -12,16 +13,29 @@ export default function AdminProducts() {
     name: '',
     category: '',
     image: '',
+    mrp: '',
     price: '',
     weight: '',
     quantity: '',
     description: '',
-    inStock: true
+    inStock: true,
+    recommended: false,
+    purchaseLimit: ''
   })
 
   useEffect(() => {
     loadProducts()
+    loadCategories()
   }, [])
+
+  const loadCategories = async () => {
+    try {
+      const data = await adminApiFetch('/api/admin/categories')
+      setCategories(data.filter(cat => cat.isActive))
+    } catch (err) {
+      console.error('Failed to load categories', err)
+    }
+  }
 
   const loadProducts = async () => {
     try {
@@ -72,11 +86,14 @@ export default function AdminProducts() {
       name: product.name,
       category: product.category,
       image: product.image || '',
+      mrp: product.mrp || '',
       price: product.price,
       weight: product.weight || '',
       quantity: product.quantity || '',
       description: product.description || '',
-      inStock: product.inStock !== undefined ? product.inStock : true
+      inStock: product.inStock !== undefined ? product.inStock : true,
+      recommended: product.recommended || false,
+      purchaseLimit: product.purchaseLimit || ''
     })
     setShowModal(true)
   }
@@ -97,11 +114,14 @@ export default function AdminProducts() {
       name: '',
       category: '',
       image: '',
+      mrp: '',
       price: '',
       weight: '',
       quantity: '',
       description: '',
-      inStock: true
+      inStock: true,
+      recommended: false,
+      purchaseLimit: ''
     })
   }
 
@@ -139,20 +159,38 @@ export default function AdminProducts() {
               <table className="data-table">
                 <thead>
                   <tr>
+                    <th>Image</th>
                     <th>Name</th>
                     <th>Category</th>
-                    <th>Price</th>
+                    <th>Price / MRP</th>
                     <th>Weight</th>
                     <th>Stock</th>
+                    <th>Recommended</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.map(product => (
                     <tr key={product._id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {String(product.image).startsWith('http') ? (
+                            <img src={product.image} alt={product.name} style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 8 }} />
+                          ) : (
+                            <span style={{ fontSize: 32 }}>{product.image || '📦'}</span>
+                          )}
+                        </div>
+                      </td>
                       <td>{product.name}</td>
                       <td>{product.category}</td>
-                      <td>₹{product.price}</td>
+                      <td>
+                        <div>
+                          <span>₹{product.price}</span>
+                          {product.mrp && Number(product.mrp) > Number(product.price) && (
+                            <span style={{ marginLeft: 6, color: '#888', textDecoration: 'line-through' }}>₹{product.mrp}</span>
+                          )}
+                        </div>
+                      </td>
                       <td>{product.weight || 'N/A'}</td>
                       <td>
                         <span className={`stock-badge ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
@@ -167,11 +205,14 @@ export default function AdminProducts() {
                                   name: product.name,
                                   category: product.category,
                                   image: product.image || '',
+                                  mrp: product.mrp || '',
                                   price: product.price,
                                   weight: product.weight || '',
                                   quantity: product.quantity || '',
                                   description: product.description || '',
-                                  inStock: !product.inStock 
+                                  inStock: !product.inStock,
+                                  recommended: product.recommended || false,
+                                  purchaseLimit: product.purchaseLimit || null
                                 }
                               })
                               loadProducts()
@@ -184,6 +225,41 @@ export default function AdminProducts() {
                           style={{ marginLeft: '8px' }}
                         >
                           {product.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}
+                        </button>
+                      </td>
+                      <td>
+                        <span className={`stock-badge ${product.recommended ? 'in-stock' : 'out-of-stock'}`}>
+                          {product.recommended ? '⭐ Yes' : 'No'}
+                        </span>
+                        <button
+                          onClick={async () => {
+                            try {
+                              await adminApiFetch(`/api/admin/products/${product._id}`, {
+                                method: 'PUT',
+                                body: {
+                                  name: product.name,
+                                  category: product.category,
+                                  image: product.image || '',
+                                  mrp: product.mrp || '',
+                                  price: product.price,
+                                  weight: product.weight || '',
+                                  quantity: product.quantity || '',
+                                  description: product.description || '',
+                                  inStock: product.inStock,
+                                  recommended: !product.recommended,
+                                  purchaseLimit: product.purchaseLimit || null
+                                }
+                              })
+                              loadProducts()
+                            } catch (err) {
+                              console.error('Failed to toggle recommended', err)
+                              alert('Failed to toggle recommended')
+                            }
+                          }}
+                          className="btn-small"
+                          style={{ marginLeft: '8px' }}
+                        >
+                          {product.recommended ? 'Remove' : 'Mark Recommended'}
                         </button>
                       </td>
                       <td>
@@ -200,16 +276,28 @@ export default function AdminProducts() {
             <div className="product-cards">
               {products.map(product => (
                 <div key={product._id} className="product-card-admin">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '8px' }}>
-                    <h4>{product.name}</h4>
-                    <span className={`stock-badge ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
-                      {product.inStock ? 'In Stock' : 'Out of Stock'}
-                    </span>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ flexShrink: 0 }}>
+                      {String(product.image).startsWith('http') ? (
+                        <img src={product.image} alt={product.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 8 }} />
+                      ) : (
+                        <span style={{ fontSize: 48 }}>{product.image || '📦'}</span>
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h4 style={{ margin: '0 0 4px 0' }}>{product.name}</h4>
+                      <span className={`stock-badge ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
+                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    </div>
                   </div>
                   <p><strong>Category:</strong> {product.category}</p>
-                  <p><strong>Price:</strong> ₹{product.price}</p>
+                  <p><strong>Price:</strong> ₹{product.price} {product.mrp && Number(product.mrp) > Number(product.price) && (
+                    <span style={{ marginLeft: 6, color: '#888', textDecoration: 'line-through' }}>₹{product.mrp}</span>
+                  )}</p>
                   <p><strong>Weight:</strong> {product.weight || 'N/A'}</p>
                   {product.description && <p><strong>Description:</strong> {product.description}</p>}
+                  <p><strong>Recommended:</strong> {product.recommended ? '⭐ Yes' : 'No'}</p>
                   <div className="product-card-actions">
                     <button
                       onClick={async () => {
@@ -220,11 +308,14 @@ export default function AdminProducts() {
                               name: product.name,
                               category: product.category,
                               image: product.image || '',
+                              mrp: product.mrp || '',
                               price: product.price,
                               weight: product.weight || '',
                               quantity: product.quantity || '',
                               description: product.description || '',
-                              inStock: !product.inStock
+                              inStock: !product.inStock,
+                              recommended: product.recommended || false,
+                              purchaseLimit: product.purchaseLimit || null
                             }
                           })
                           loadProducts()
@@ -236,6 +327,35 @@ export default function AdminProducts() {
                       className="btn-small"
                     >
                       {product.inStock ? 'Mark Out' : 'Mark In'}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await adminApiFetch(`/api/admin/products/${product._id}`, {
+                            method: 'PUT',
+                            body: {
+                              name: product.name,
+                              category: product.category,
+                              image: product.image || '',
+                              mrp: product.mrp || '',
+                              price: product.price,
+                              weight: product.weight || '',
+                              quantity: product.quantity || '',
+                              description: product.description || '',
+                              inStock: product.inStock,
+                              recommended: !product.recommended,
+                              purchaseLimit: product.purchaseLimit || null
+                            }
+                          })
+                          loadProducts()
+                        } catch (err) {
+                          console.error('Failed to toggle recommended', err)
+                          alert('Failed to toggle recommended')
+                        }
+                      }}
+                      className="btn-small"
+                    >
+                      {product.recommended ? '⭐ Remove' : '⭐ Add'}
                     </button>
                     <button onClick={() => handleEdit(product)} className="btn-edit">Edit</button>
                     <button onClick={() => handleDelete(product._id)} className="btn-delete">Delete</button>
@@ -270,13 +390,9 @@ export default function AdminProducts() {
                   <label>Category *</label>
                   <select name="category" value={formData.category} onChange={handleChange} required>
                     <option value="">Select Category</option>
-                    <option value="Food">Food</option>
-                    <option value="Cook">Cook</option>
-                    <option value="Wash">Wash</option>
-                    <option value="Care">Care</option>
-                    <option value="Drinks">Drinks</option>
-                    <option value="Snacks">Snacks</option>
-                    <option value="Dairy">Dairy</option>
+                    {categories.map(cat => (
+                      <option key={cat._id} value={cat.name}>{cat.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -294,6 +410,33 @@ export default function AdminProducts() {
                     required
                   />
                 </div>
+                <div className="form-group">
+                  <label>MRP (₹)</label>
+                  <input
+                    type="number"
+                    name="mrp"
+                    value={formData.mrp}
+                    onChange={handleChange}
+                    min="0"
+                    step="0.01"
+                    placeholder="e.g. 349"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Purchase Limit</label>
+                  <input
+                    type="number"
+                    name="purchaseLimit"
+                    value={formData.purchaseLimit}
+                    onChange={handleChange}
+                    min="1"
+                    placeholder="Max qty per user"
+                  />
+                  <small style={{ color: '#888', fontSize: '12px' }}>Leave empty for no limit</small>
+                </div>
+              </div>
+
+              <div className="form-row">
                 <div className="form-group">
                   <label>Weight</label>
                   <input
@@ -324,8 +467,74 @@ export default function AdminProducts() {
                     name="image"
                     value={formData.image}
                     onChange={handleChange}
-                    placeholder="🍚"
+                    placeholder="🍚 or https://..."
                   />
+                  
+                  {/* Image Preview */}
+                  {formData.image && (
+                    <div style={{ marginTop: 12, padding: 12, background: '#f7fafc', borderRadius: 8, textAlign: 'center' }}>
+                      <div style={{ fontSize: 12, color: '#718096', marginBottom: 8, fontWeight: 600 }}>Preview:</div>
+                      {String(formData.image).startsWith('http') ? (
+                        <img 
+                          src={formData.image} 
+                          alt="Preview" 
+                          style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 8, border: '2px solid #e2e8f0' }} 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling.style.display = 'block';
+                          }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: 80 }}>{formData.image}</span>
+                      )}
+                      <div style={{ display: 'none', color: '#e53e3e', fontSize: 12, marginTop: 8 }}>Failed to load image</div>
+                    </div>
+                  )}
+                  
+                  <div style={{ marginTop: 8 }}>
+                    <label 
+                      htmlFor="image-upload" 
+                      style={{ 
+                        display: 'inline-block',
+                        padding: '8px 16px',
+                        background: '#48bb78',
+                        color: 'white',
+                        borderRadius: 6,
+                        cursor: 'pointer',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.background = '#38a169'}
+                      onMouseOut={(e) => e.target.style.background = '#48bb78'}
+                    >
+                      📤 Upload Image
+                    </label>
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        try {
+                          const fd = new FormData()
+                          fd.append('file', file)
+                          const res = await adminApiFetch('/api/admin/uploads/image', {
+                            method: 'POST',
+                            body: fd
+                          })
+                          setFormData(prev => ({ ...prev, image: res.url }))
+                        } catch (err) {
+                          console.error('Image upload failed', err)
+                          alert(err.message || 'Image upload failed')
+                        } finally {
+                          e.target.value = ''
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -348,6 +557,18 @@ export default function AdminProducts() {
                     onChange={handleChange}
                   />
                   In Stock
+                </label>
+              </div>
+
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="recommended"
+                    checked={formData.recommended}
+                    onChange={handleChange}
+                  />
+                  ⭐ Mark as Recommended
                 </label>
               </div>
 

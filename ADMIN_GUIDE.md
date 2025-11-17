@@ -39,18 +39,21 @@ Or register a new user via `/register` and then update their `isAdmin` field in 
 - **Add New Products**: 
   - Product name *
   - Category (Food, Cook, Wash, Care, Drinks, Snacks, Dairy) *
+  - MRP (₹) — optional original price; must be ≥ Price
   - Price (₹) *
+  - **Purchase Limit** — Set maximum quantity per customer (leave empty for no limit)
   - Weight (e.g., "1 kg")
   - Quantity/Pack (e.g., "Pack of 1")
-  - Image (emoji or URL)
+  - Image (emoji or URL) or upload via file input (uploads to Cloudinary)
   - Description
   - Stock status (In Stock / Out of Stock)
-  - Stock status (In Stock / Out of Stock) — controllable via checkbox in the add/edit modal or the inline toggle button in the products table
+  - **Recommended** — Mark product to appear in "Recommended for You" section
   
 - **Edit Products**: Update any product details
 - **Delete Products**: Remove products from the catalog
 - **View Stock Status**: See which products are in stock or out of stock
- - **Quick Toggle**: Use the inline "Mark Out of Stock" / "Mark In Stock" button to flip availability instantly without opening the modal
+- **Quick Toggle**: Use the inline "Mark Out of Stock" / "Mark In Stock" button to flip availability instantly without opening the modal
+- **Recommended Toggle**: Use the inline "Mark Recommended" / "Remove" button to feature products in the recommended section
 
 ### 4. Order Management (`/admin/orders`)
 - View all customer orders
@@ -76,6 +79,7 @@ Or register a new user via `/register` and then update their `isAdmin` field in 
   - `POST /api/admin/products` - Create product
   - `PUT /api/admin/products/:id` - Update product
   - `DELETE /api/admin/products/:id` - Delete product
+  - `POST /api/admin/uploads/image` - Upload product image (file or `{ imageUrl }`) to Cloudinary
   - `GET /api/admin/orders` - All orders
   - `PUT /api/admin/orders/:id/status` - Update order status
 
@@ -107,8 +111,50 @@ Or register a new user via `/register` and then update their `isAdmin` field in 
 - Out-of-stock items are visibly labeled and the "Add to Cart" button is disabled on the customer dashboard.
 - In-stock items behave as usual; toggling stock in the admin portal reflects immediately on the customer UI.
 
+### Recommended Products
+- Admin can mark products as "Recommended" via checkbox in the product form or quick toggle button.
+- Recommended products appear in a special "⭐ Recommended for You" section at the top of the customer dashboard.
+- This section has a distinctive golden background to highlight featured items.
+
+### Product Organization
+- **Recommended Section**: Shows in-stock recommended products in a highlighted yellow banner.
+- **All Products Section**: Shows all in-stock products that are not marked as recommended.
+- **Out of Stock Section**: Displays unavailable products in a grayed-out section at the bottom (📦 Currently Out of Stock).
+- Search results combine all sections and hide the separate grouping.
+
 ## Product Model Update
-Added `inStock` field (boolean, default: `true`) to track availability.
+Added:
+- `inStock` (boolean, default: `true`) — track availability.
+- `mrp` (number, optional) — original price; must be ≥ `price`.
+- `recommended` (boolean, default: `false`) — feature product in recommended section.
+- `purchaseLimit` (number, optional) — maximum quantity per customer; null = no limit.
+
+Customer UI displays discount badges and strike-through MRP when `mrp > price`.
+Products marked as recommended appear in a highlighted section at the top of the dashboard.
+
+### Purchase Limits
+- Admin can set a purchase limit (e.g., 5 items) for any product.
+- When a customer adds items to cart:
+  - The dashboard shows a badge: "🔒 Max X per customer • Y in cart"
+  - Quantity controls enforce the limit (+ button disabled when limit reached)
+  - If limit is reached, "Limit Reached" badge appears instead of ADD button
+  - Multiple add attempts are blocked with informative alerts
+- Benefits:
+  - Prevent hoarding of limited stock items
+  - Fair distribution of high-demand products
+  - Promotional quantity restrictions (e.g., "Max 2 per customer" offers)
+- Leave the field empty to allow unlimited purchases
+
+### Image Uploads (Cloudinary)
+Set these in `backend/.env` for uploads to work:
+
+```
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+```
+
+Admin can either paste an image URL/emoji or use the file picker to upload. Successful uploads set the product `image` to the returned Cloudinary URL.
 
 ## Security Notes
 - All admin routes are protected with `adminAuth` middleware

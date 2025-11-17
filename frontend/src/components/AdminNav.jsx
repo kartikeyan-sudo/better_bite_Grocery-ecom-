@@ -11,7 +11,9 @@ export default function AdminNav() {
     { path: '/admin', label: 'Dashboard', icon: '📊' },
     { path: '/admin/customers', label: 'Customers', icon: '👥' },
     { path: '/admin/products', label: 'Products', icon: '📦' },
-    { path: '/admin/orders', label: 'Orders', icon: '🛒' }
+    { path: '/admin/categories', label: 'Categories', icon: '🏷️' },
+    { path: '/admin/orders', label: 'Orders', icon: '🛒' },
+    { path: '/admin/contact', label: 'Contact', icon: '📞' }
   ]
 
   const closeMenu = () => setMobileMenuOpen(false)

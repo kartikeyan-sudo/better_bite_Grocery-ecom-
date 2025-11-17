@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
@@ -10,6 +10,16 @@ export default function Cart() {
   const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
+  const [quickAddQuantities, setQuickAddQuantities] = useState({})
+  const [showAddressForm, setShowAddressForm] = useState(false)
+  const [addressData, setAddressData] = useState({
+    fullName: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: ''
+  })
 
   const handleCheckout = async () => {
     if (cart.length === 0) {
@@ -20,6 +30,28 @@ export default function Cart() {
     if (!user) {
       alert('Please login to checkout')
       navigate('/login')
+      return
+    }
+
+    // Show address form instead of immediate checkout
+    setShowAddressForm(true)
+  }
+
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target
+    setAddressData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handlePlaceOrder = async (e) => {
+    e.preventDefault()
+    
+    // Validate address
+    if (!addressData.fullName || !addressData.phone || !addressData.address || 
+        !addressData.city || !addressData.state || !addressData.pincode) {
+      alert('Please fill in all address fields')
       return
     }
     
@@ -42,11 +74,24 @@ export default function Cart() {
 
       await apiFetch('/api/orders', {
         method: 'POST',
-        body: { items, total: finalTotal }
+        body: { 
+          items, 
+          total: finalTotal,
+          shippingAddress: addressData
+        }
       })
       
-      // Clear cart
+      // Clear cart and address
       clearCart()
+      setAddressData({
+        fullName: '',
+        phone: '',
+        address: '',
+        city: '',
+        state: '',
+        pincode: ''
+      })
+      setShowAddressForm(false)
       
       // Navigate to orders page
       alert('Order placed successfully!')
@@ -64,6 +109,34 @@ export default function Cart() {
       clearCart()
     }
   }
+
+  const getQuickAddQuantity = (itemId) => {
+    return quickAddQuantities[itemId] || 1
+  }
+
+  const updateQuickAddQuantity = (itemId, value) => {
+    const num = parseInt(value) || 1
+    setQuickAddQuantities(prev => ({
+      ...prev,
+      [itemId]: Math.max(1, num)
+    }))
+  }
+
+  const handleQuickAdd = (item) => {
+    const addQty = getQuickAddQuantity(item.id)
+    updateQuantity(item.id, item.quantity + addQty)
+    // Reset to 1 after adding
+    setQuickAddQuantities(prev => ({
+      ...prev,
+      [item.id]: 1
+    }))
+  }
+
+  // Memoize calculations to ensure proper updates
+  const subtotal = useMemo(() => getCartTotal(), [cart])
+  const deliveryFee = useMemo(() => subtotal > 500 ? 0 : 40, [subtotal])
+  const tax = useMemo(() => subtotal * 0.05, [subtotal])
+  const finalTotal = useMemo(() => subtotal + deliveryFee + tax, [subtotal, deliveryFee, tax])
 
   return (
     <div className="cart-page">
@@ -100,10 +173,17 @@ export default function Cart() {
               </div>
 
               <div className="cart-items-list">
-                {cart.map((item) => (
-                  <div key={item.id} className="cart-item">
+                {cart.map((item) => {
+                  const itemTotal = (item.price * item.quantity).toFixed(2);
+                  
+                  return (
+                  <div key={`${item.id}-${item.quantity}`} className="cart-item">
                     <div className="cart-item-image">
-                      <span className="cart-item-emoji">{item.image}</span>
+                      {String(item.image).startsWith('http') ? (
+                        <img src={item.image} alt={item.name} className="cart-item-img" />
+                      ) : (
+                        <span className="cart-item-emoji">{item.image}</span>
+                      )}
                     </div>
                     
                     <div className="cart-item-details">
@@ -132,9 +212,29 @@ export default function Cart() {
                         </button>
                       </div>
 
+                      <div className="quick-add-section">
+                        <div className="quick-add-controls">
+                          <input
+                            type="number"
+                            min="1"
+                            value={getQuickAddQuantity(item.id)}
+                            onChange={(e) => updateQuickAddQuantity(item.id, e.target.value)}
+                            className="quick-add-input"
+                            placeholder="Qty"
+                          />
+                          <button
+                            className="quick-add-btn"
+                            onClick={() => handleQuickAdd(item)}
+                            title={`Add ${getQuickAddQuantity(item.id)} more`}
+                          >
+                            + Add More
+                          </button>
+                        </div>
+                      </div>
+
                       <div className="cart-item-price">
-                        <span className="item-total">₹{(item.price * item.quantity).toFixed(2)}</span>
-                        <span className="item-unit-price">₹{item.price} each</span>
+                        <span className="item-total">₹{itemTotal}</span>
+                        <span className="item-unit-price">₹{item.price.toFixed(2)} each</span>
                       </div>
 
                       <button
@@ -145,7 +245,7 @@ export default function Cart() {
                       </button>
                     </div>
                   </div>
-                ))}
+                )})}
               </div>
             </div>
 
@@ -156,17 +256,17 @@ export default function Cart() {
                 
                 <div className="summary-row">
                   <span>Subtotal</span>
-                  <span>₹{getCartTotal().toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
                 </div>
 
                 <div className="summary-row">
                   <span>Delivery Fee</span>
-                  <span>{getCartTotal() > 500 ? 'FREE' : '₹40.00'}</span>
+                  <span>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}</span>
                 </div>
 
                 <div className="summary-row">
                   <span>Tax (5%)</span>
-                  <span>₹{(getCartTotal() * 0.05).toFixed(2)}</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
 
                 <div className="summary-divider"></div>
@@ -174,7 +274,7 @@ export default function Cart() {
                 <div className="summary-row total-row">
                   <span>Total</span>
                   <span className="total-amount">
-                    ₹{(getCartTotal() * 1.05 + (getCartTotal() > 500 ? 0 : 40)).toFixed(2)}
+                    ₹{finalTotal.toFixed(2)}
                   </span>
                 </div>
 
@@ -183,11 +283,11 @@ export default function Cart() {
                 </button>
 
                 <div className="delivery-note">
-                  {getCartTotal() > 500 ? (
+                  {deliveryFee === 0 ? (
                     <p className="free-delivery">🎉 You got FREE delivery!</p>
                   ) : (
                     <p className="delivery-info">
-                      Add ₹{(500 - getCartTotal()).toFixed(2)} more for FREE delivery
+                      Add ₹{(500 - subtotal).toFixed(2)} more for FREE delivery
                     </p>
                   )}
                 </div>
@@ -196,6 +296,137 @@ export default function Cart() {
           </div>
         )}
       </div>
+
+      {/* Address Form Modal */}
+      {showAddressForm && (
+        <div className="address-modal-overlay" onClick={() => setShowAddressForm(false)}>
+          <div className="address-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="address-modal-header">
+              <h2>Delivery Address</h2>
+            </div>
+            <form onSubmit={handlePlaceOrder} className="address-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Full Name *</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={addressData.fullName}
+                    onChange={handleAddressChange}
+                    required
+                    placeholder="Enter your full name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Phone Number *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={addressData.phone}
+                    onChange={handleAddressChange}
+                    required
+                    pattern="[0-9]{10}"
+                    placeholder="10-digit mobile number"
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group" style={{gridColumn: '1 / -1'}}>
+                  <label>Address *</label>
+                  <textarea
+                    name="address"
+                    value={addressData.address}
+                    onChange={handleAddressChange}
+                    required
+                    placeholder="House/Flat no., Street, Area"
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>City *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={addressData.city}
+                    onChange={handleAddressChange}
+                    required
+                    placeholder="City"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>State *</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={addressData.state}
+                    onChange={handleAddressChange}
+                    required
+                    placeholder="State"
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Pincode *</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={addressData.pincode}
+                    onChange={handleAddressChange}
+                    required
+                    pattern="[0-9]{6}"
+                    placeholder="6-digit pincode"
+                  />
+                </div>
+              </div>
+
+              <div className="order-summary-mini">
+                <h3>Order Summary</h3>
+                <div className="summary-line">
+                  <span>Subtotal:</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="summary-line">
+                  <span>Delivery:</span>
+                  <span>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}</span>
+                </div>
+                <div className="summary-line">
+                  <span>Tax (5%):</span>
+                  <span>₹{tax.toFixed(2)}</span>
+                </div>
+                <div className="summary-line total-line">
+                  <span>Total:</span>
+                  <span>₹{finalTotal.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="address-form-actions">
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => setShowAddressForm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="place-order-btn"
+                  disabled={loading}
+                >
+                  {loading ? 'Placing Order...' : 'Place Order'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

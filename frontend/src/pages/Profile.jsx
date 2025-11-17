@@ -158,9 +158,6 @@ export default function Profile() {
             <Link to="/orders" className="quick-link-item">
               <span>📦</span> My Orders
             </Link>
-            <Link to="/wishlist" className="quick-link-item">
-              <span>❤️</span> Wishlist
-            </Link>
             <Link to="/settings" className="quick-link-item">
               <span>⚙️</span> Settings
             </Link>

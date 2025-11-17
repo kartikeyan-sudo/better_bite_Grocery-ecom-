@@ -3,12 +3,14 @@ const router = express.Router()
 const auth = require('../middleware/auth')
 const Order = require('../models/Order')
 const Product = require('../models/Product')
+const { sendOrderNotification } = require('../services/telegramBot')
 
 // POST /api/orders - create order (requires auth)
 router.post('/', auth, async (req, res) => {
   try {
-    const { items, total } = req.body
+    const { items, total, shippingAddress } = req.body
     if (!items || !items.length) return res.status(400).json({ error: 'No items' })
+    if (!shippingAddress) return res.status(400).json({ error: 'Shipping address is required' })
 
     // Validate stock availability for all items
     const ids = items
@@ -27,12 +29,20 @@ router.post('/', auth, async (req, res) => {
       userId: req.user._id,
       items,
       total,
+      shippingAddress,
       status: 'Pending',
       orderDate: new Date(),
       estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
     })
 
     await order.save()
+    
+    // Populate userId for Telegram notification
+    await order.populate('userId', 'name email')
+    
+    // Send Telegram notification
+    await sendOrderNotification(order)
+    
     res.status(201).json(order)
   } catch (err) {
     console.error(err)

@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose')
+const { initBot } = require('./services/telegramBot')
 
 const authRouter = require('./routes/auth')
 const usersRouter = require('./routes/users')
@@ -10,6 +11,9 @@ const productsRouter = require('./routes/products')
 const ordersRouter = require('./routes/orders')
 const cartRouter = require('./routes/cart')
 const adminRouter = require('./routes/admin')
+const uploadsRouter = require('./routes/uploads')
+const categoriesRouter = require('./routes/categories')
+const contactRouter = require('./routes/contact')
 
 const app = express()
 
@@ -19,7 +23,6 @@ const app = express()
 const allowedOriginsEnv = process.env.CORS_ORIGIN || ''
 const allowedOrigins = allowedOriginsEnv.split(',').map(s => s.trim()).filter(Boolean)
 
-console.log('CORS allowed origins:', allowedOrigins.length ? allowedOrigins : '[none - permissive]')
 
 app.use(cors())
 
@@ -32,7 +35,10 @@ app.use('/api/users', usersRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/orders', ordersRouter)
 app.use('/api/cart', cartRouter)
+app.use('/api/categories', categoriesRouter)
+app.use('/api/contact', contactRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/admin/uploads', uploadsRouter)
 
 const PORT = process.env.PORT || 5000
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecomm'
@@ -41,6 +47,25 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecomm'
 mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log('Connected to MongoDB')
+    
+    // Seed default categories if none exist
+    const Category = require('./models/Category')
+    const categoryCount = await Category.countDocuments()
+    if (categoryCount === 0) {
+      console.log('Seeding default categories...')
+      const defaultCategories = [
+        { name: 'Food', icon: '🍚', displayOrder: 1, isActive: true },
+        { name: 'Cook', icon: '🍳', displayOrder: 2, isActive: true },
+        { name: 'Wash', icon: '🧼', displayOrder: 3, isActive: true },
+        { name: 'Care', icon: '💅', displayOrder: 4, isActive: true },
+        { name: 'Drinks', icon: '🥤', displayOrder: 5, isActive: true },
+        { name: 'Snacks', icon: '🍿', displayOrder: 6, isActive: true },
+        { name: 'Dairy', icon: '🥛', displayOrder: 7, isActive: true },
+      ]
+      await Category.insertMany(defaultCategories)
+      console.log('Default categories seeded')
+    }
+    
     // optional: seed some products if none exist
     const Product = require('./models/Product')
     const User = require('./models/User')
@@ -54,6 +79,29 @@ mongoose.connect(MONGO_URI)
       ]
       await Product.insertMany(sample)
       console.log('Sample products seeded')
+    }
+
+    // Seed default contact information if none exists
+    const Contact = require('./models/Contact')
+    const contactCount = await Contact.countDocuments()
+    if (contactCount === 0) {
+      console.log('Seeding default contact information...')
+      await Contact.create({
+        businessName: 'Better Bite',
+        email: 'info@betterbite.com',
+        phone: '+91 98765 43210',
+        alternatePhone: '+91 98765 43211',
+        address: '123 Market Street, Near City Mall',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        pincode: '400001',
+        country: 'India',
+        mondayToFriday: '9:00 AM - 8:00 PM',
+        saturday: '9:00 AM - 6:00 PM',
+        sunday: '10:00 AM - 4:00 PM',
+        description: 'Your trusted grocery store for fresh produce, daily essentials, and quality products at the best prices.'
+      })
+      console.log('Default contact information seeded')
     }
 
     // Ensure a default admin user exists for initial access
@@ -77,6 +125,9 @@ mongoose.connect(MONGO_URI)
     } catch (err) {
       console.warn('Failed to ensure default admin user:', err.message)
     }
+
+    // Initialize Telegram Bot
+    initBot()
 
     app.listen(PORT, () => console.log(`Server listening on port ${PORT}`))
   })
