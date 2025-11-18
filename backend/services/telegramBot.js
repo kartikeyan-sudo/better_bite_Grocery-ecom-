@@ -62,7 +62,7 @@ const initBot = () => {
               return
             }
 
-            // If shipped, prompt for delivery boy info and delivery time
+            // If shipped, prompt for delivery boy info and delivery fees
             if (newStatus === 'Shipped') {
               await bot.sendMessage(msg.chat.id, '🚚 Please reply with the delivery boy name:', {
                 reply_to_message_id: msg.message_id
@@ -70,23 +70,23 @@ const initBot = () => {
               bot.once('message', async (nameMsg) => {
                 if (nameMsg.reply_to_message && nameMsg.reply_to_message.message_id === msg.message_id) {
                   const deliveryBoyName = nameMsg.text
-                  await bot.sendMessage(msg.chat.id, '📱 Please reply with the delivery boy phone number:', {
+                  await bot.sendMessage(msg.chat.id, '📱 Please reply with the delivery boy contact number:', {
                     reply_to_message_id: nameMsg.message_id
                   })
                   bot.once('message', async (phoneMsg) => {
                     if (phoneMsg.reply_to_message && phoneMsg.reply_to_message.message_id === nameMsg.message_id) {
                       const deliveryBoyPhone = phoneMsg.text
-                      await bot.sendMessage(msg.chat.id, '⏰ Please reply with the expected delivery time (e.g. 5:30 PM):', {
+                      await bot.sendMessage(msg.chat.id, '💸 Please reply with the delivery fees (amount):', {
                         reply_to_message_id: phoneMsg.message_id
                       })
-                      bot.once('message', async (timeMsg) => {
-                        if (timeMsg.reply_to_message && timeMsg.reply_to_message.message_id === phoneMsg.message_id) {
-                          const deliveryTime = timeMsg.text
+                      bot.once('message', async (feeMsg) => {
+                        if (feeMsg.reply_to_message && feeMsg.reply_to_message.message_id === phoneMsg.message_id) {
+                          const deliveryFees = parseFloat(feeMsg.text)
                           order.deliveryBoy = { name: deliveryBoyName, contact: deliveryBoyPhone }
-                          order.estimatedDelivery = deliveryTime
+                          order.deliveryCharges = isNaN(deliveryFees) ? 0 : deliveryFees
                           await order.save()
-                          await bot.sendMessage(msg.chat.id, `✅ Delivery info saved:\nName: ${deliveryBoyName}\nPhone: ${deliveryBoyPhone}\nTime: ${deliveryTime}`)
-                          // Optionally, update the order message
+                          await bot.sendMessage(msg.chat.id, `✅ Delivery info saved:\nName: ${deliveryBoyName}\nContact: ${deliveryBoyPhone}\nFees: ₹${order.deliveryCharges}`)
+                          // Update the order message
                           const updatedMessage = formatOrderMessage(order)
                           await bot.editMessageText(updatedMessage, {
                             chat_id: msg.chat.id,
