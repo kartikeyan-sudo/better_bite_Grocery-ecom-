@@ -1,3 +1,23 @@
+/* Delivery Boy & Charges Info */
+.delivery-boy-info, .delivery-charges-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.delivery-label {
+  font-size: 11px;
+  color: #764ba2;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.delivery-value {
+  font-size: 15px;
+  color: #2d3748;
+  font-weight: 600;
+}
 .orders-page {
   min-height: 100vh;
   background: #f7fafc;

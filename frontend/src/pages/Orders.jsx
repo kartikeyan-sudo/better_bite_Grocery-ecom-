@@ -188,6 +188,18 @@ export default function Orders() {
                         <span className="delivery-date">{formatDate(order.estimatedDelivery)}</span>
                       </div>
                     )}
+                    {order.deliveryBoy && order.deliveryBoy.name && (
+                      <div className="delivery-boy-info">
+                        <span className="delivery-label">Delivery Boy:</span>
+                        <span className="delivery-value">{order.deliveryBoy.name} ({order.deliveryBoy.contact})</span>
+                      </div>
+                    )}
+                    {order.deliveryCharges !== undefined && order.deliveryCharges !== null && (
+                      <div className="delivery-charges-info">
+                        <span className="delivery-label">Delivery Charge:</span>
+                        <span className="delivery-value">₹{order.deliveryCharges}</span>
+                      </div>
+                    )}
                     <div className="order-total">
                       <span className="total-label">Total Amount:</span>
                       <span className="total-amount">₹{order.total.toFixed(2)}</span>
