@@ -607,7 +607,7 @@
   margin-bottom: 24px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(250, 251, 255, 0.8) 100%);
   backdrop-filter: blur(15px);
-  padding: 18px;
+  padding: 20px;
   border-radius: 20px;
   box-shadow: 0 6px 25px rgba(102, 126, 234, 0.12),
               inset 0 1px 0 rgba(255, 255, 255, 0.7);
@@ -616,9 +616,9 @@
 
 .categories-scroll {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   overflow-x: auto;
-  padding-bottom: 12px;
+  padding: 6px 4px 16px 4px;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e0 transparent;
 }
@@ -641,10 +641,10 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 14px 20px;
+  padding: 12px 18px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 251, 255, 0.9) 100%);
   border: 2px solid rgba(102, 126, 234, 0.15);
-  border-radius: 20px;
+  border-radius: 18px;
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   white-space: nowrap;
@@ -652,7 +652,8 @@
   font-weight: 800;
   color: #475569;
   flex-shrink: 0;
-  min-width: 90px;
+  min-width: 85px;
+  max-width: 110px;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.12),
               inset 0 1px 0 rgba(255, 255, 255, 0.9);
   position: relative;

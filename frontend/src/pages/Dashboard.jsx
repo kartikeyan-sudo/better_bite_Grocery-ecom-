@@ -22,12 +22,22 @@ export default function Dashboard() {
     const loadCategories = async () => {
       try {
         const data = await apiFetch('/api/categories')
-        const allCategory = { name: 'All', icon: '🛒', bannerImage: '', _id: 'all' }
+        const allCategory = { 
+          name: 'All', 
+          icon: '🛒', 
+          bannerImage: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Cdefs%3E%3ClinearGradient id="grad" x1="0%25" y1="0%25" x2="100%25" y2="100%25"%3E%3Cstop offset="0%25" style="stop-color:%23667eea;stop-opacity:1" /%3E%3Cstop offset="100%25" style="stop-color:%23764ba2;stop-opacity:1" /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="100" height="100" fill="url(%23grad)" /%3E%3Ctext x="50" y="65" font-size="50" text-anchor="middle" fill="white"%3E🛒%3C/text%3E%3C/svg%3E', 
+          _id: 'all' 
+        }
         setCategories([allCategory, ...data])
       } catch (err) {
         console.error('Failed to fetch categories', err)
         // Fallback to default categories
-        setCategories([{ name: 'All', icon: '🛒', bannerImage: '', _id: 'all' }])
+        setCategories([{ 
+          name: 'All', 
+          icon: '🛒', 
+          bannerImage: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Cdefs%3E%3ClinearGradient id="grad" x1="0%25" y1="0%25" x2="100%25" y2="100%25"%3E%3Cstop offset="0%25" style="stop-color:%23667eea;stop-opacity:1" /%3E%3Cstop offset="100%25" style="stop-color:%23764ba2;stop-opacity:1" /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width="100" height="100" fill="url(%23grad)" /%3E%3Ctext x="50" y="65" font-size="50" text-anchor="middle" fill="white"%3E🛒%3C/text%3E%3C/svg%3E', 
+          _id: 'all' 
+        }])
       }
     }
     loadCategories()
@@ -61,13 +71,29 @@ export default function Dashboard() {
   }, [])
 
   const filteredProducts = products
-    .filter(p => selectedCategory === 'All' || p.category === selectedCategory)
+    .filter(p => {
+      // When searching, show all categories
+      if (searchQuery.trim()) return true
+      // Otherwise filter by selected category
+      return selectedCategory === 'All' || p.category === selectedCategory
+    })
     .filter(p => {
       if (!searchQuery.trim()) return true
-      const query = searchQuery.toLowerCase()
-      return p.name.toLowerCase().includes(query) || 
-             (p.description && p.description.toLowerCase().includes(query)) ||
-             p.category.toLowerCase().includes(query)
+      const query = searchQuery.toLowerCase().trim()
+      
+      // Search through all relevant fields
+      const searchableText = [
+        p.name,
+        p.description,
+        p.category,
+        p.weight,
+        p.price?.toString(),
+        p.mrp?.toString(),
+        p.inStock ? 'in stock' : 'out of stock',
+        p.recommended ? 'recommended' : '',
+      ].filter(Boolean).join(' ').toLowerCase()
+      
+      return searchableText.includes(query)
     })
 
   // Separate products into sections
@@ -364,30 +390,40 @@ export default function Dashboard() {
         {/* All Products Section */}
         <section className="products-section">
           <h2 className="section-heading">
-            {searchQuery ? `Search Results (${inStockProducts.length + recommendedProducts.length})` : 
+            {searchQuery ? `Search Results (${filteredProducts.filter(p => p.inStock).length})` : 
              selectedCategory === 'All' ? 'All Products' : `${selectedCategory} Products`}
           </h2>
-          {inStockProducts.length === 0 && (!searchQuery && recommendedProducts.length === 0) ? (
-            <div className="empty-results">
-              <div className="empty-illustration">🔍</div>
-              <h3 className="empty-title">
-                {searchQuery ? 'No results found' : 'No products available'}
-              </h3>
-              <p className="empty-message">
-                {searchQuery 
-                  ? `We couldn't find any products matching "${searchQuery}"` 
-                  : 'All products are currently out of stock'}
-              </p>
-              {searchQuery && (
+          {searchQuery ? (
+            // Show all search results together
+            filteredProducts.filter(p => p.inStock).length === 0 ? (
+              <div className="empty-results">
+                <div className="empty-illustration">🔍</div>
+                <h3 className="empty-title">No results found</h3>
+                <p className="empty-message">
+                  We couldn't find any products matching "{searchQuery}"
+                </p>
                 <button className="clear-search-btn" onClick={() => setSearchQuery('')}>
                   Clear Search
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="products-grid">
+                {filteredProducts.filter(p => p.inStock).map(product => renderProductCard(product))}
+              </div>
+            )
           ) : (
-            <div className="products-grid">
-              {inStockProducts.map(product => renderProductCard(product))}
-            </div>
+            // Show regular category filtered products
+            inStockProducts.length === 0 && recommendedProducts.length === 0 ? (
+              <div className="empty-results">
+                <div className="empty-illustration">🔍</div>
+                <h3 className="empty-title">No products available</h3>
+                <p className="empty-message">All products are currently out of stock</p>
+              </div>
+            ) : (
+              <div className="products-grid">
+                {inStockProducts.map(product => renderProductCard(product))}
+              </div>
+            )
           )}
         </section>
 
