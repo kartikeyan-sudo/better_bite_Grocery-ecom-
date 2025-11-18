@@ -37,7 +37,10 @@ export default function Home() {
       {/* Header/Navbar */}
       <header className="navbar">
         <div className="nav-content">
-          <h1 className="logo">🥬 Better Bite Grocery</h1>
+          <div className="logo-container">
+            <img src="/logo.jpg" alt="Better Bite Grocery" className="logo" />
+            <span className="logo-text">Better Bite</span>
+          </div>
           <nav className="nav-links">
             <Link to="/">Home</Link>
             <a href="/shop" onClick={handleShopClick}>Shop</a>
@@ -114,7 +117,7 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>🥬 Better Bite Grocery</h3>
+            <img src="/logo.jpg" alt="Better Bite Grocery" className="footer-logo" />
             <p>Your trusted source for fresh, organic groceries delivered to your doorstep.</p>
           </div>
           <div className="footer-section">

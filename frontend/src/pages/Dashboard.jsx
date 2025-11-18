@@ -233,7 +233,10 @@ export default function Dashboard() {
           <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
             <span className="hamburger">☰</span>
           </button>
-          <h1 className="dashboard-logo">🥬 Better Bite</h1>
+          <div className="logo-container">
+            <img src="/logo.jpg" alt="Better Bite" className="dashboard-logo" />
+            <span className="logo-text">Better Bite</span>
+          </div>
         </div>
         
         <div className="header-right">
@@ -328,13 +331,15 @@ export default function Dashboard() {
                 onClick={() => setSelectedCategory(cat.name)}
               >
                 {cat.bannerImage ? (
-                  <div className="category-chip-banner">
-                    <img src={cat.bannerImage} alt={cat.name} className="category-chip-img" />
-                    <div className="category-chip-overlay">
-                      <span className="category-chip-icon">{cat.icon}</span>
-                      <span className="category-chip-name">{cat.name}</span>
+                  <>
+                    <div className="category-chip-banner">
+                      <img src={cat.bannerImage} alt={cat.name} className="category-chip-img" />
+                      <div className="category-chip-overlay">
+                        <span className="category-chip-icon">{cat.icon}</span>
+                      </div>
                     </div>
-                  </div>
+                    <span className="category-chip-name">{cat.name}</span>
+                  </>
                 ) : (
                   <>
                     <span className="category-chip-icon">{cat.icon}</span>

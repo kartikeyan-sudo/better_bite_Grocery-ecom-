@@ -29,7 +29,10 @@ export default function AdminNav() {
           >
             ☰
           </button>
-          <h1 className="admin-logo">🛡️ Admin CMS</h1>
+          <div className="logo-container">
+            <img src="/logo.jpg" alt="Better Bite Admin" className="admin-logo" />
+            <span className="logo-text">Better Bite</span>
+          </div>
           <div className="admin-nav-links">
             {navLinks.map(link => (
               <Link 

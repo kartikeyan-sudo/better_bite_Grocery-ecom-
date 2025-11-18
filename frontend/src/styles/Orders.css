@@ -34,8 +34,8 @@
 .orders-header .back-btn {
   padding: 10px 20px;
   background: white;
-  color: #48bb78;
-  border: 2px solid #48bb78;
+  color: #667eea;
+  border: 2px solid #667eea;
   border-radius: 8px;
   font-weight: 600;
   font-size: 14px;
@@ -45,14 +45,14 @@
 }
 
 .orders-header .back-btn:hover {
-  background: #48bb78;
+  background: #667eea;
   color: white;
   transform: translateY(-2px);
 }
 
 .orders-header .continue-shopping-btn {
   padding: 10px 20px;
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -131,7 +131,7 @@
 }
 
 .filter-select:focus {
-  border-color: #48bb78;
+  border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
 }
 
@@ -233,7 +233,7 @@
 .order-item-image {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+  background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -294,7 +294,7 @@
 .order-item-price {
   font-size: 20px;
   font-weight: 800;
-  color: #48bb78;
+  color: #667eea;
   text-align: right;
   display: flex;
   align-items: center;
@@ -345,7 +345,7 @@
 
 .total-amount {
   font-size: 24px;
-  color: #48bb78;
+  color: #667eea;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
