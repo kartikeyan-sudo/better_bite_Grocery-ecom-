@@ -64,44 +64,48 @@ const initBot = () => {
 
             // If shipped, prompt for delivery boy info and delivery fees
             if (newStatus === 'Shipped') {
-              await bot.sendMessage(msg.chat.id, '🚚 Please reply with the delivery boy name:', {
-                reply_to_message_id: msg.message_id
-              })
-              bot.once('message', async (nameMsg) => {
-                if (nameMsg.reply_to_message && nameMsg.reply_to_message.message_id === msg.message_id) {
-                  const deliveryBoyName = nameMsg.text
-                  await bot.sendMessage(msg.chat.id, '📱 Please reply with the delivery boy contact number:', {
-                    reply_to_message_id: nameMsg.message_id
-                  })
-                  bot.once('message', async (phoneMsg) => {
-                    if (phoneMsg.reply_to_message && phoneMsg.reply_to_message.message_id === nameMsg.message_id) {
-                      const deliveryBoyPhone = phoneMsg.text
-                      await bot.sendMessage(msg.chat.id, '💸 Please reply with the delivery fees (amount):', {
-                        reply_to_message_id: phoneMsg.message_id
-                      })
-                      bot.once('message', async (feeMsg) => {
-                        if (feeMsg.reply_to_message && feeMsg.reply_to_message.message_id === phoneMsg.message_id) {
-                          const deliveryFees = parseFloat(feeMsg.text)
-                          order.deliveryBoy = { name: deliveryBoyName, contact: deliveryBoyPhone }
-                          order.deliveryCharges = isNaN(deliveryFees) ? 0 : deliveryFees
-                          await order.save()
-                          await bot.sendMessage(msg.chat.id, `✅ Delivery info saved:\nName: ${deliveryBoyName}\nContact: ${deliveryBoyPhone}\nFees: ₹${order.deliveryCharges}`)
-                          // Update the order message
-                          const updatedMessage = formatOrderMessage(order)
-                          await bot.editMessageText(updatedMessage, {
-                            chat_id: msg.chat.id,
-                            message_id: msg.message_id,
-                            parse_mode: 'HTML',
-                            reply_markup: {
-                              inline_keyboard: getStatusButtons(orderId, newStatus)
-                            }
-                          })
-                        }
-                      })
+              // Use a simple state object to track input sequence per chat
+              const state = {
+                step: 0,
+                name: '',
+                phone: '',
+                fees: '',
+                chatId: msg.chat.id,
+                orderId: orderId,
+                messageId: msg.message_id
+              }
+              await bot.sendMessage(state.chatId, '🚚 Please enter the delivery boy name:')
+              const handler = async (inputMsg) => {
+                if (inputMsg.chat.id !== state.chatId) return
+                if (state.step === 0) {
+                  state.name = inputMsg.text
+                  state.step = 1
+                  await bot.sendMessage(state.chatId, '📱 Please enter the delivery boy contact number:')
+                } else if (state.step === 1) {
+                  state.phone = inputMsg.text
+                  state.step = 2
+                  await bot.sendMessage(state.chatId, '💸 Please enter the delivery fees (amount):')
+                } else if (state.step === 2) {
+                  state.fees = inputMsg.text
+                  // Save to order
+                  order.deliveryBoy = { name: state.name, contact: state.phone }
+                  order.deliveryCharges = isNaN(parseFloat(state.fees)) ? 0 : parseFloat(state.fees)
+                  await order.save()
+                  await bot.sendMessage(state.chatId, `✅ Delivery info saved:\nName: ${state.name}\nContact: ${state.phone}\nFees: ₹${order.deliveryCharges}`)
+                  // Update the order message
+                  const updatedMessage = formatOrderMessage(order)
+                  await bot.editMessageText(updatedMessage, {
+                    chat_id: state.chatId,
+                    message_id: state.messageId,
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                      inline_keyboard: getStatusButtons(state.orderId, newStatus)
                     }
                   })
+                  bot.removeListener('message', handler)
                 }
-              })
+              }
+              bot.on('message', handler)
             }
 
             // If cancelled, prompt for cancellation reason
