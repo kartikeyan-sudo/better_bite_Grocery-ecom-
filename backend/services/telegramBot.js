@@ -164,12 +164,17 @@ ${statusEmoji[order.status] || '⚪'} Status: <b>${order.status}</b>
 ${items}
 
 💰 <b>Total: ₹${order.total}</b>
+🚚 <b>Delivery Charges:</b> ₹${order.deliveryCharges || 0}
+
+${order.deliveryBoy?.name ? `🧑‍💼 <b>Delivery Boy:</b> ${order.deliveryBoy.name} (${order.deliveryBoy.contact || 'N/A'})` : ''}
 
 📍 <b>Shipping Address:</b>
 ${order.shippingAddress.fullName}
 ${order.shippingAddress.phone}
 ${order.shippingAddress.address}
 ${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.pincode}
+
+${order.cancellationReason ? `❌ <b>Cancellation Reason:</b> ${order.cancellationReason}` : ''}
 
 📅 Order Date: ${new Date(order.orderDate).toLocaleString('en-IN')}
 `.trim()
