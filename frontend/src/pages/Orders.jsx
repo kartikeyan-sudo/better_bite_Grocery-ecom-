@@ -181,28 +181,49 @@ export default function Orders() {
 
                 {/* Order Footer */}
                 <div className="order-footer">
-                  <div className="order-footer-info">
+                  {/* Left Section - Delivery Details */}
+                  <div className="order-footer-left">
                     {order.estimatedDelivery && (
-                      <div className="delivery-info">
-                        <span className="delivery-label">Estimated Delivery:</span>
-                        <span className="delivery-date">{formatDate(order.estimatedDelivery)}</span>
+                      <div className="delivery-info-box">
+                        <div className="info-icon">📅</div>
+                        <div className="info-content">
+                          <span className="info-label">Estimated Delivery</span>
+                          <span className="info-value">{formatDate(order.estimatedDelivery)}</span>
+                        </div>
                       </div>
                     )}
                     {order.deliveryBoy && order.deliveryBoy.name && (
-                      <div className="delivery-boy-info">
-                        <span className="delivery-label">Delivery Boy:</span>
-                        <span className="delivery-value">{order.deliveryBoy.name} ({order.deliveryBoy.contact})</span>
+                      <div className="delivery-info-box">
+                        <div className="info-icon">🚚</div>
+                        <div className="info-content">
+                          <span className="info-label">Delivery Boy</span>
+                          <span className="info-value">{order.deliveryBoy.name}</span>
+                          <span className="info-sub">📞 {order.deliveryBoy.contact}</span>
+                        </div>
                       </div>
                     )}
-                    {order.deliveryCharges !== undefined && order.deliveryCharges !== null && (
-                      <div className="delivery-charges-info">
-                        <span className="delivery-label">Delivery Charge:</span>
-                        <span className="delivery-value">₹{order.deliveryCharges}</span>
+                  </div>
+
+                  {/* Right Section - Price Breakdown */}
+                  <div className="order-footer-right">
+                    <div className="price-breakdown">
+                      <div className="price-row">
+                        <span className="price-label">Product Total</span>
+                        <span className="price-value">₹{order.total.toFixed(2)}</span>
                       </div>
-                    )}
-                    <div className="order-total">
-                      <span className="total-label">Total Amount:</span>
-                      <span className="total-amount">₹{order.total.toFixed(2)}</span>
+                      {order.deliveryCharges !== undefined && order.deliveryCharges !== null && (
+                        <div className="price-row">
+                          <span className="price-label">Delivery Charge</span>
+                          <span className="price-value">₹{order.deliveryCharges.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className="price-divider"></div>
+                      <div className="price-row total-row">
+                        <span className="price-label-total">Total Amount</span>
+                        <span className="price-value-total">
+                          ₹{((order.total || 0) + (order.deliveryCharges || 0)).toFixed(2)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
