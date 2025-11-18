@@ -53,34 +53,101 @@ const initBot = () => {
             const newStatus = parts[2]
 
             // Update order status in database
-            const order = await Order.findByIdAndUpdate(
-              orderId,
-              { status: newStatus },
-              { new: true }
-            ).populate('userId', 'name email')
-
-            if (order) {
-              // Answer callback query
-              await bot.answerCallbackQuery(callbackQuery.id, {
-                text: `Order status updated to ${newStatus}!`
-              })
-
-              // Edit the message to show updated status
-              const updatedMessage = formatOrderMessage(order)
-              await bot.editMessageText(updatedMessage, {
-                chat_id: msg.chat.id,
-                message_id: msg.message_id,
-                parse_mode: 'HTML',
-                reply_markup: {
-                  inline_keyboard: getStatusButtons(orderId, newStatus)
-                }
-              })
-            } else {
+            let order = await Order.findById(orderId).populate('userId', 'name email')
+            if (!order) {
               await bot.answerCallbackQuery(callbackQuery.id, {
                 text: 'Order not found!',
                 show_alert: true
               })
+              return
             }
+
+            // If shipped, prompt for delivery boy info and delivery time
+            if (newStatus === 'Shipped') {
+              await bot.sendMessage(msg.chat.id, '🚚 Please reply with the delivery boy name:', {
+                reply_to_message_id: msg.message_id
+              })
+              bot.once('message', async (nameMsg) => {
+                if (nameMsg.reply_to_message && nameMsg.reply_to_message.message_id === msg.message_id) {
+                  const deliveryBoyName = nameMsg.text
+                  await bot.sendMessage(msg.chat.id, '📱 Please reply with the delivery boy phone number:', {
+                    reply_to_message_id: nameMsg.message_id
+                  })
+                  bot.once('message', async (phoneMsg) => {
+                    if (phoneMsg.reply_to_message && phoneMsg.reply_to_message.message_id === nameMsg.message_id) {
+                      const deliveryBoyPhone = phoneMsg.text
+                      await bot.sendMessage(msg.chat.id, '⏰ Please reply with the expected delivery time (e.g. 5:30 PM):', {
+                        reply_to_message_id: phoneMsg.message_id
+                      })
+                      bot.once('message', async (timeMsg) => {
+                        if (timeMsg.reply_to_message && timeMsg.reply_to_message.message_id === phoneMsg.message_id) {
+                          const deliveryTime = timeMsg.text
+                          order.deliveryBoy = { name: deliveryBoyName, contact: deliveryBoyPhone }
+                          order.estimatedDelivery = deliveryTime
+                          await order.save()
+                          await bot.sendMessage(msg.chat.id, `✅ Delivery info saved:\nName: ${deliveryBoyName}\nPhone: ${deliveryBoyPhone}\nTime: ${deliveryTime}`)
+                          // Optionally, update the order message
+                          const updatedMessage = formatOrderMessage(order)
+                          await bot.editMessageText(updatedMessage, {
+                            chat_id: msg.chat.id,
+                            message_id: msg.message_id,
+                            parse_mode: 'HTML',
+                            reply_markup: {
+                              inline_keyboard: getStatusButtons(orderId, newStatus)
+                            }
+                          })
+                        }
+                      })
+                    }
+                  })
+                }
+              })
+            }
+
+            // If cancelled, prompt for cancellation reason
+            if (newStatus === 'Cancelled') {
+              await bot.sendMessage(msg.chat.id, '❌ Please reply with the cancellation reason for this order:', {
+                reply_to_message_id: msg.message_id
+              })
+              // Store context for awaiting reason
+              bot.once('message', async (reasonMsg) => {
+                if (reasonMsg.reply_to_message && reasonMsg.reply_to_message.message_id === msg.message_id) {
+                  const reasonText = reasonMsg.text
+                  order.cancellationReason = reasonText
+                  await order.save()
+                  await bot.sendMessage(msg.chat.id, `❌ Cancellation reason saved: ${reasonText}`)
+                  // Optionally, update the order message
+                  const updatedMessage = formatOrderMessage(order)
+                  await bot.editMessageText(updatedMessage, {
+                    chat_id: msg.chat.id,
+                    message_id: msg.message_id,
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                      inline_keyboard: getStatusButtons(orderId, newStatus)
+                    }
+                  })
+                }
+              })
+            }
+
+            // Update order status
+            order.status = newStatus
+            await order.save()
+
+            await bot.answerCallbackQuery(callbackQuery.id, {
+              text: `Order status updated to ${newStatus}!`
+            })
+
+            // Edit the message to show updated status
+            const updatedMessage = formatOrderMessage(order)
+            await bot.editMessageText(updatedMessage, {
+              chat_id: msg.chat.id,
+              message_id: msg.message_id,
+              parse_mode: 'HTML',
+              reply_markup: {
+                inline_keyboard: getStatusButtons(orderId, newStatus)
+              }
+            })
           }
         } catch (error) {
           console.error('Error handling callback query:', error)
