@@ -193,6 +193,26 @@ router.put('/orders/:id/status', adminAuth, async (req, res) => {
   }
 })
 
+// PUT /api/admin/orders/:id/delivery - Update estimated delivery
+router.put('/orders/:id/delivery', adminAuth, async (req, res) => {
+  try {
+    const { estimatedDelivery } = req.body
+    
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { estimatedDelivery },
+      { new: true }
+    ).populate('userId', 'name email')
+
+    if (!order) return res.status(404).json({ error: 'Order not found' })
+    
+    res.json(order)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 // ===== CATEGORY ROUTES =====
 
 // GET /api/admin/categories - Get all categories

@@ -102,6 +102,33 @@ export default function AdminOrders() {
                   </div>
                 )}
 
+                <div className="estimated-delivery-admin" style={{ marginTop: '12px', padding: '12px', background: '#f0f9ff', borderRadius: '8px' }}>
+                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px', color: '#0369a1' }}>🚚 Estimated Delivery:</label>
+                  <input
+                    type="datetime-local"
+                    value={order.estimatedDelivery ? new Date(order.estimatedDelivery).toISOString().slice(0, 16) : ''}
+                    onChange={async (e) => {
+                      const newDate = e.target.value ? new Date(e.target.value).toISOString() : null
+                      try {
+                        await adminApiFetch(`/api/admin/orders/${order._id}/delivery`, {
+                          method: 'PUT',
+                          body: { estimatedDelivery: newDate }
+                        })
+                        loadOrders()
+                      } catch (err) {
+                        console.error('Failed to update delivery date', err)
+                        alert('Failed to update delivery date')
+                      }
+                    }}
+                    style={{ padding: '8px', borderRadius: '6px', border: '1px solid #0ea5e9', fontSize: '14px', width: '100%', maxWidth: '300px' }}
+                  />
+                  {order.estimatedDelivery && (
+                    <p style={{ marginTop: '6px', fontSize: '13px', color: '#0369a1' }}>
+                      📅 {new Date(order.estimatedDelivery).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })} at {new Date(order.estimatedDelivery).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  )}
+                </div>
+
                 <div className="order-items-admin">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="order-item-admin">

@@ -264,7 +264,7 @@ export default function Cart() {
 
                 <div className="summary-row">
                   <span>Delivery Fee</span>
-                  <span>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}</span>
+                  <span style={{ color: '#f59e0b', fontSize: '13px', fontWeight: '600' }}>Decision Pending</span>
                 </div>
 
                 <div className="summary-row">
@@ -286,13 +286,9 @@ export default function Cart() {
                 </button>
 
                 <div className="delivery-note">
-                  {deliveryFee === 0 ? (
-                    <p className="free-delivery">🎉 You got FREE delivery!</p>
-                  ) : (
-                    <p className="delivery-info">
-                      Add ₹{(500 - subtotal).toFixed(2)} more for FREE delivery
-                    </p>
-                  )}
+                  <p className="delivery-info" style={{ color: '#64748b', fontSize: '13px', textAlign: 'center' }}>
+                    💡 Delivery charges will be updated by admin after order confirmation
+                  </p>
                 </div>
               </div>
             </div>

@@ -239,6 +239,8 @@ ${items}
 
 ${order.deliveryBoy?.name ? `🧑‍💼 <b>Delivery Boy:</b> ${order.deliveryBoy.name} (${order.deliveryBoy.contact || 'N/A'})` : ''}
 
+${order.estimatedDelivery ? `🚚 <b>Estimated Delivery:</b> ${new Date(order.estimatedDelivery).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}` : ''}
+
 📍 <b>Shipping Address:</b>
 ${order.shippingAddress.fullName}
 ${order.shippingAddress.phone}

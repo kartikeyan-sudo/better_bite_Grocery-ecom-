@@ -145,6 +145,11 @@ export default function Orders() {
                     <p className="order-date">
                       Placed on {formatDate(order.orderDate)} at {formatTime(order.orderDate)}
                     </p>
+                    {order.estimatedDelivery && (
+                      <p className="estimated-delivery" style={{ marginTop: '4px', color: '#0369a1', fontSize: '14px', fontWeight: '600' }}>
+                        🚚 Estimated Delivery: {formatDate(order.estimatedDelivery)} at {formatTime(order.estimatedDelivery)}
+                      </p>
+                    )}
                   </div>
                   <div className="order-header-right">
                     <div className="order-status-badge" style={{ background: getStatusColor(order.status) }}>
@@ -211,17 +216,21 @@ export default function Orders() {
                         <span className="price-label">Product Total</span>
                         <span className="price-value">₹{order.total.toFixed(2)}</span>
                       </div>
-                      {order.deliveryCharges !== undefined && order.deliveryCharges !== null && (
-                        <div className="price-row">
-                          <span className="price-label">Delivery Charge</span>
-                          <span className="price-value">₹{order.deliveryCharges.toFixed(2)}</span>
-                        </div>
-                      )}
+                      <div className="price-row">
+                        <span className="price-label">Delivery Charge</span>
+                        <span className="price-value" style={{ color: order.deliveryCharges !== undefined && order.deliveryCharges !== null ? '#10b981' : '#f59e0b', fontWeight: '600' }}>
+                          {order.deliveryCharges !== undefined && order.deliveryCharges !== null 
+                            ? `₹${order.deliveryCharges.toFixed(2)}` 
+                            : 'Decision Pending'}
+                        </span>
+                      </div>
                       <div className="price-divider"></div>
                       <div className="price-row total-row">
                         <span className="price-label-total">Total Amount</span>
                         <span className="price-value-total">
-                          ₹{((order.total || 0) + (order.deliveryCharges || 0)).toFixed(2)}
+                          {order.deliveryCharges !== undefined && order.deliveryCharges !== null
+                            ? `₹${((order.total || 0) + (order.deliveryCharges || 0)).toFixed(2)}`
+                            : `₹${(order.total || 0).toFixed(2)} + Delivery`}
                         </span>
                       </div>
                     </div>
