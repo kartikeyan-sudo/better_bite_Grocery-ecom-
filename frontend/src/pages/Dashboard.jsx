@@ -260,15 +260,19 @@ export default function Dashboard() {
             <span className="hamburger">☰</span>
           </button>
           <div className="logo-container">
-            <img src="/logo.jpg" alt="Better Bite" className="dashboard-logo" />
-            <span className="logo-text">Better Bite</span>
+            <img src="/logo.png" alt="Better Bites" className="dashboard-logo" />
+            <span className="logo-text">Better Bites</span>
           </div>
         </div>
         
         <div className="header-right">
           <Link to="/cart" className="cart-icon-link">
             <div className="cart-icon-wrapper">
-              <span className="cart-icon">🛒</span>
+              <svg className="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
               {getCartCount() > 0 && (
                 <span className="cart-badge">{getCartCount()}</span>
               )}
@@ -277,7 +281,10 @@ export default function Dashboard() {
           
           <div className="profile-container">
             <button className="profile-btn" onClick={() => setProfileOpen(!profileOpen)}>
-              <span className="profile-icon">👤</span>
+              <svg className="profile-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
             </button>
             {profileOpen && (
               <div className="profile-dropdown">
@@ -287,14 +294,27 @@ export default function Dashboard() {
                 </div>
                 <div className="dropdown-divider"></div>
                 <Link to="/profile" className="dropdown-item">
-                  <span>👤</span> My Profile
+                  <svg className="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  My Profile
                 </Link>
                 <Link to="/orders" className="dropdown-item">
-                  <span>📦</span> My Orders
+                  <svg className="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                  </svg>
+                  My Orders
                 </Link>
                 <div className="dropdown-divider"></div>
                 <button onClick={handleLogout} className="dropdown-item logout-btn">
-                  <span>🚪</span> Logout
+                  <svg className="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  Logout
                 </button>
               </div>
             )}
@@ -332,7 +352,10 @@ export default function Dashboard() {
         {/* Search Bar */}
         <section className="search-section">
           <div className="search-container">
-            <span className="search-icon">🔍</span>
+            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
             <input
               type="text"
               className="search-input"

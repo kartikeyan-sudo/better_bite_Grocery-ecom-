@@ -38,8 +38,8 @@ export default function Home() {
       <header className="navbar">
         <div className="nav-content">
           <div className="logo-container">
-            <img src="/logo.jpg" alt="Better Bite Grocery" className="logo" />
-            <span className="logo-text">Better Bite</span>
+                        <img src="/logo.png" alt="Better Bites" className="logo" />
+            <span className="logo-text">Better Bites</span>
           </div>
           <nav className="nav-links">
             <Link to="/">Home</Link>
@@ -117,7 +117,7 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-section">
-            <img src="/logo.jpg" alt="Better Bite Grocery" className="footer-logo" />
+                          <img src="/logo.png" alt="Better Bites" className="footer-logo" />
             <p>Your trusted source for fresh, organic groceries delivered to your doorstep.</p>
           </div>
           <div className="footer-section">

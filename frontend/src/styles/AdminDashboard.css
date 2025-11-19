@@ -48,27 +48,25 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: white;
+  background: transparent;
   padding: 8px 16px;
   border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
 .logo-container:hover {
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
   transform: translateY(-2px);
 }
 
 .admin-logo {
-  height: 46px;
+  height: 80px;
   width: auto;
   object-fit: contain;
   transition: all 0.3s ease;
 }
 
 .logo-text {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 900;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #fbbf24 100%);
   -webkit-background-clip: text;
@@ -1075,7 +1073,11 @@
   }
 
   .admin-logo {
-    font-size: 18px;
+    height: 85px;
+  }
+
+  .logo-text {
+    font-size: 22px;
   }
 
   .admin-main {
@@ -1225,6 +1227,14 @@
 }
 
 @media (max-width: 480px) {
+  .admin-logo {
+    height: 90px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+  }
+
   .page-title {
     font-size: 20px;
   }
