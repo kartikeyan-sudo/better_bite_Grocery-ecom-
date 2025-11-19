@@ -898,7 +898,6 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.08);
-  transition: all 0.25s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -917,18 +916,7 @@
   background: linear-gradient(135deg, #667eea, #764ba2, #fbbf24);
   border-radius: 20px;
   opacity: 0;
-  transition: opacity 0.25s ease;
   z-index: -1;
-}
-
-.product-card:hover::before {
-  opacity: 1;
-}
-
-.product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-  border-color: transparent;
 }
 
 .product-image-wrapper {
@@ -970,14 +958,8 @@
 
 .product-emoji {
   font-size: 48px;
-  transition: all 0.25s ease;
   filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.2));
   z-index: 1;
-}
-
-.product-card:hover .product-emoji {
-  transform: scale(1.05);
-  filter: drop-shadow(0 6px 16px rgba(118, 75, 162, 0.3));
 }
 
 .discount-badge {
@@ -995,7 +977,11 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   z-index: 10;
-  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 @keyframes badge-pulse {
