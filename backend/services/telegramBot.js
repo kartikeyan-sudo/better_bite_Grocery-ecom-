@@ -70,6 +70,7 @@ const initBot = () => {
                 name: '',
                 phone: '',
                 fees: '',
+                estimatedDate: '',
                 chatId: msg.chat.id,
                 orderId: orderId,
                 messageId: msg.message_id
@@ -87,11 +88,37 @@ const initBot = () => {
                   await bot.sendMessage(state.chatId, '💸 Please enter the delivery fees (amount):')
                 } else if (state.step === 2) {
                   state.fees = inputMsg.text
+                  state.step = 3
+                  await bot.sendMessage(state.chatId, '📅 Please enter estimated delivery date and time (Format: DD/MM/YYYY HH:MM)\nExample: 20/11/2025 15:30')
+                } else if (state.step === 3) {
+                  state.estimatedDate = inputMsg.text
+                  
+                  // Parse the date
+                  let estimatedDelivery = null
+                  try {
+                    // Parse DD/MM/YYYY HH:MM format
+                    const datePattern = /(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/
+                    const match = state.estimatedDate.match(datePattern)
+                    if (match) {
+                      const [, day, month, year, hour, minute] = match
+                      estimatedDelivery = new Date(year, month - 1, day, hour, minute)
+                    }
+                  } catch (err) {
+                    console.error('Date parsing error:', err)
+                  }
+                  
                   // Save to order
                   order.deliveryBoy = { name: state.name, contact: state.phone }
                   order.deliveryCharges = isNaN(parseFloat(state.fees)) ? 0 : parseFloat(state.fees)
+                  order.estimatedDelivery = estimatedDelivery
                   await order.save()
-                  await bot.sendMessage(state.chatId, `✅ Delivery info saved:\nName: ${state.name}\nContact: ${state.phone}\nFees: ₹${order.deliveryCharges}`)
+                  
+                  const deliveryDateStr = estimatedDelivery 
+                    ? estimatedDelivery.toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    : 'Not set'
+                  
+                  await bot.sendMessage(state.chatId, `✅ Delivery info saved:\nName: ${state.name}\nContact: ${state.phone}\nFees: ₹${order.deliveryCharges}\nEstimated Delivery: ${deliveryDateStr}`)
+                  
                   // Update the order message
                   const updatedMessage = formatOrderMessage(order)
                   await bot.editMessageText(updatedMessage, {
