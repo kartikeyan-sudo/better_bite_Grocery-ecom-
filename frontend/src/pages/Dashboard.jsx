@@ -15,8 +15,38 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [quantities, setQuantities] = useState({})
   const [categories, setCategories] = useState([])
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const [products, setProducts] = useState([])
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      // Send a wake-up request to the backend
+      await apiFetch('/api/products?limit=1')
+      // Reload products
+      const data = await apiFetch('/api/products')
+      const mapped = data.map(p => ({
+        id: p._id,
+        name: p.name,
+        category: p.category,
+        image: p.image || '🛍️',
+        price: p.price,
+        mrp: p.mrp,
+        weight: p.weight,
+        quantity: p.quantity,
+        description: p.description,
+        inStock: p.inStock !== undefined ? p.inStock : true,
+        recommended: p.recommended || false,
+        purchaseLimit: p.purchaseLimit || null
+      }))
+      setProducts(mapped)
+    } catch (err) {
+      console.error('Failed to refresh', err)
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500)
+    }
+  }
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -260,12 +290,24 @@ export default function Dashboard() {
             <span className="hamburger">☰</span>
           </button>
           <div className="logo-container">
-            <img src="/logo.png" alt="Better Bites" className="dashboard-logo" />
             <span className="logo-text">Better Bites</span>
           </div>
         </div>
         
         <div className="header-right">
+          <button 
+            className={`refresh-btn ${isRefreshing ? 'refreshing' : ''}`}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            title="Refresh products & wake backend"
+          >
+            <svg className="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
+
           <Link to="/cart" className="cart-icon-link">
             <div className="cart-icon-wrapper">
               <svg className="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
