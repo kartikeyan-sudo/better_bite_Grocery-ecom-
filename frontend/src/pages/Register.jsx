@@ -81,14 +81,14 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Phone Number</label>
             <input
-              type="email"
+              type="tel"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Enter your Phone Number"
               required
             />
           </div>

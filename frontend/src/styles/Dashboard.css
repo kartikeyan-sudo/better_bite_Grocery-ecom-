@@ -118,6 +118,75 @@
   z-index: 1;
 }
 
+/* WhatsApp floating watermark/button */
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1400;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(18,140,126,0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s;
+  opacity: 0.98;
+}
+.whatsapp-float:hover { transform: translateY(-6px) scale(1.04); box-shadow: 0 18px 48px rgba(18,140,126,0.26); }
+.whatsapp-icon { width: 34px; height: 34px; color: #fff; display: block; }
+/* label that appears on hover */
+.whatsapp-label {
+  position: absolute;
+  right: 86px; /* place left of the button */
+  bottom: 14px;
+  background: rgba(17,24,39,0.9);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.35);
+  opacity: 0;
+  transform: translateX(6px) translateY(0);
+  transition: opacity 160ms ease, transform 160ms ease;
+  pointer-events: none;
+}
+.whatsapp-float:hover .whatsapp-label {
+  opacity: 1;
+  transform: translateX(0) translateY(0);
+  pointer-events: auto;
+}
+
+/* Green pill label that appears on hover */
+.whatsapp-green-label {
+  position: absolute;
+  right: 86px;
+  bottom: 14px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(18,140,126,0.18);
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 160ms ease, transform 160ms ease;
+  pointer-events: auto;
+  z-index: 1500;
+}
+.whatsapp-float:hover .whatsapp-green-label {
+  /* keep consistent hover behavior if needed */
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
 .logo-container {
   display: flex;
   align-items: center;
@@ -153,7 +222,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 /* Refresh Button */
@@ -354,6 +423,33 @@
     transform: translateY(0);
   }
 }
+
+/* Auth buttons (Login / Sign Up) - match existing button UI */
+.auth-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff !important;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Segoe UI', sans-serif;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+  min-width: 60px;
+  text-align: center;
+}
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(102,126,234,0.32);
+}
+.auth-btn:active { transform: translateY(0); }
 
 .profile-info {
   padding: 12px;
