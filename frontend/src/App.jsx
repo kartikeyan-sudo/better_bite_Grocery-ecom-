@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { AdminAuthProvider } from './context/AdminAuthContext'
 import { CartProvider } from './context/CartContext'
 import { OrderProvider } from './context/OrderContext'
+import { startKeepalive } from './utils/keepalive'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -22,6 +23,11 @@ import AdminCategories from './pages/AdminCategories'
 import AdminContact from './pages/AdminContact'
 
 export default function App() {
+  useEffect(() => {
+    // Start keepalive to prevent backend from sleeping
+    startKeepalive()
+  }, [])
+
   return (
     <AuthProvider>
       <AdminAuthProvider>
