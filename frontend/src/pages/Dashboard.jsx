@@ -203,7 +203,7 @@ export default function Dashboard() {
       <div className="product-info">
         <h3 className="product-title">{product.name}</h3>
         <p className="product-desc">{product.description}</p>
-        <div className="product-weight-info">📦 {product.weight} • {product.quantity}</div>
+        <div className="product-weight-info"> {product.weight} • {product.quantity}</div>
         {product.purchaseLimit && (
           <div className="purchase-limit-badge">
             🔒 Max {product.purchaseLimit} per customer
