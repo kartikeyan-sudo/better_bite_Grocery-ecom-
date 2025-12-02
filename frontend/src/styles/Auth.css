@@ -10,7 +10,7 @@
 .auth-card {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   padding: 40px;
   width: 100%;
   max-width: 440px;
@@ -81,7 +81,7 @@
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .btn-primary:active {
@@ -118,3 +118,5 @@
 .auth-footer a:hover {
   text-decoration: underline;
 }
+
+

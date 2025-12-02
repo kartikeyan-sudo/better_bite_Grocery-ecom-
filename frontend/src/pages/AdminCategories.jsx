@@ -8,6 +8,7 @@ export default function AdminCategories() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingCategory, setEditingCategory] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     icon: '📦',
@@ -102,25 +103,92 @@ export default function AdminCategories() {
     setShowModal(true)
   }
 
+  // Filter categories based on search query
+  const filteredCategories = categories.filter(category => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      category.name?.toLowerCase().includes(query) ||
+      category.icon?.includes(query) ||
+      category.displayOrder?.toString().includes(query) ||
+      (category.isActive ? 'active' : 'inactive').includes(query)
+    )
+  })
+
   return (
     <div className="admin-container">
       <AdminNav />
 
       <main className="admin-main">
         <div className="page-header">
-          <h2 className="page-title">Category Management</h2>
+          <div>
+            <h2 className="page-title">Category Management</h2>
+            <p className="page-subtitle">Total Categories: {categories.length} {searchQuery && `(Showing ${filteredCategories.length} matches)`}</p>
+          </div>
           <button className="btn-primary" onClick={openAddModal}>+ Add Category</button>
+        </div>
+
+        {/* Search Bar */}
+        <div className="search-section" style={{ margin: '20px 0' }}>
+          <div className="search-container" style={{ maxWidth: '600px' }}>
+            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', color: '#667eea' }}>
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search categories by name, status, order..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 16px 12px 48px',
+                border: '2px solid #e0e7ff',
+                borderRadius: '12px',
+                fontSize: '15px',
+                outline: 'none',
+                transition: 'all 0.2s ease'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e0e7ff'}
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: '#667eea',
+                  padding: '4px 8px'
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {loading ? (
           <div className="loading">Loading categories...</div>
-        ) : categories.length === 0 ? (
+        ) : filteredCategories.length === 0 ? (
           <div className="empty-state">
-            <p>No categories yet. Add your first category!</p>
+            <p>{searchQuery ? `No categories found matching "${searchQuery}"` : 'No categories yet. Add your first category!'}</p>
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="btn-primary" style={{ marginTop: '12px' }}>
+                Clear Search
+              </button>
+            )}
           </div>
         ) : (
           <div className="categories-grid">
-            {categories.map(category => (
+            {filteredCategories.map(category => (
               <div key={category._id} className="category-card">
                 <div className="category-banner">
                   {category.bannerImage ? (

@@ -7,7 +7,7 @@
 /* Header */
 .orders-header {
   background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   padding: 20px 24px;
   position: sticky;
   top: 0;
@@ -65,7 +65,7 @@
 
 .orders-header .continue-shopping-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 /* Empty Orders */
@@ -108,7 +108,7 @@
   background: white;
   padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .filter-select {
@@ -146,12 +146,12 @@
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   transition: all 0.3s;
 }
 
 .order-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 /* Order Header */
@@ -199,7 +199,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 /* Order Items */
@@ -331,13 +331,13 @@
   padding: 12px 16px;
   border-radius: 12px;
   border: 2px solid rgba(102, 126, 234, 0.15);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  transition: all 0.2s ease;
 }
 
 .delivery-info-box:hover {
   border-color: rgba(102, 126, 234, 0.3);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   transform: translateY(-2px);
 }
 
@@ -390,7 +390,7 @@
   padding: 20px;
   border-radius: 12px;
   border: 2px solid rgba(102, 126, 234, 0.2);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.12);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .price-row {
@@ -651,3 +651,5 @@
     font-size: 20px; 
   }
 }
+
+

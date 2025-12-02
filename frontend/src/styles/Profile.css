@@ -7,7 +7,7 @@
 /* Header */
 .profile-header {
   background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   padding: 20px 24px;
   position: sticky;
   top: 0;
@@ -59,7 +59,7 @@
 .profile-card {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   overflow: hidden;
 }
 
@@ -83,7 +83,7 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .avatar-emoji {
@@ -100,12 +100,12 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .change-avatar-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 /* Info Section */
@@ -187,13 +187,13 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(72, 187, 120, 0.25);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .btn-edit:hover,
 .btn-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.35);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .btn-cancel {
@@ -263,7 +263,7 @@
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  animation: fadeIn 0.2s ease;
+  
 }
 
 .modal-content {
@@ -274,24 +274,12 @@
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  animation: slideUp 0.3s ease;
+  
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
+
 
 .modal-header {
   display: flex;
@@ -344,7 +332,7 @@
 
 .avatar-option:hover {
   background: #f0fff4;
-  transform: scale(1.1);
+  
 }
 
 .avatar-option.selected {
@@ -398,3 +386,5 @@
   .profile-actions { padding: 0 16px 20px; flex-direction: column; gap: 8px; }
   .quick-links { padding: 0 16px 20px; }
 }
+
+

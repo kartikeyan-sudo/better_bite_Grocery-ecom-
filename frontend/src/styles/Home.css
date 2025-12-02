@@ -1,243 +1,109 @@
-/* Keep all existing styles and add these new ones */
-
-/* Auth Buttons - Modern Premium Design */
+/* Minimalistic Auth Buttons - Optimized for low-end devices */
 .auth-btn {
-  padding: 16px 36px;
-  border-radius: 25px;
-  font-weight: 800;
-  font-size: 16px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 0.5px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  position: relative;
-  overflow: hidden;
-  min-width: 140px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  min-width: 120px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.auth-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.6s ease;
-}
-
-.auth-btn:hover::before {
-  left: 100%;
-}
-
-.auth-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.auth-btn:active::after {
-  width: 300px;
-  height: 300px;
-}
-
 .login-btn {
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.15) 0%,
-    rgba(118, 75, 162, 0.15) 50%,
-    rgba(251, 191, 36, 0.1) 100%);
+  background: #fff;
   color: #667eea;
-  border: 2px solid rgba(102, 126, 234, 0.3);
-  box-shadow:
-    0 8px 32px rgba(102, 126, 234, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.login-btn::before {
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2),
-    transparent);
+  border: 2px solid #667eea;
 }
 
 .login-btn:hover {
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.9) 0%,
-    rgba(118, 75, 162, 0.9) 100%);
+  background: #667eea;
   color: white;
-  transform: translateY(-6px) scale(1.05);
-  box-shadow:
-    0 20px 60px rgba(102, 126, 234, 0.4),
-    0 0 30px rgba(102, 126, 234, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border-color: rgba(102, 126, 234, 0.8);
 }
 
-.login-btn:hover::before {
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0.4),
-    transparent);
-}
-
-.register-btn {
-  background: linear-gradient(135deg,
-    #667eea 0%,
-    #764ba2 50%,
-    #f093fb 100%);
-  color: white;
-  box-shadow:
-    0 12px 35px rgba(102, 126, 234, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: 2px solid transparent;
-}
-
-.register-btn:hover {
-  background: linear-gradient(135deg,
-    #764ba2 0%,
-    #667eea 30%,
-    #f093fb 70%,
-    #fbbf24 100%);
-  transform: translateY(-6px) scale(1.05);
-  box-shadow:
-    0 25px 70px rgba(102, 126, 234, 0.5),
-    0 0 40px rgba(118, 75, 162, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-/* Alias for signup-btn - Premium Gradient Design */
+.register-btn,
 .signup-btn {
-  background: linear-gradient(135deg,
-    #667eea 0%,
-    #764ba2 50%,
-    #f093fb 100%);
+  background: #667eea;
   color: white;
-  box-shadow:
-    0 12px 35px rgba(102, 126, 234, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: 2px solid transparent;
+  border: 2px solid #667eea;
 }
 
-.signup-btn::before {
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    rgba(255, 255, 255, 0.2),
-    transparent);
-}
-
+.register-btn:hover,
 .signup-btn:hover {
-  background: linear-gradient(135deg,
-    #764ba2 0%,
-    #667eea 30%,
-    #f093fb 70%,
-    #fbbf24 100%);
-  transform: translateY(-6px) scale(1.05);
-  box-shadow:
-    0 25px 70px rgba(102, 126, 234, 0.5),
-    0 0 40px rgba(118, 75, 162, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: #764ba2;
+  border-color: #764ba2;
 }
 
-.signup-btn:hover::before {
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 255, 255, 0.8),
-    rgba(255, 255, 255, 0.6),
-    transparent);
-}
-
-/* WhatsApp Float Button */
+/* WhatsApp Float Button - Minimalistic */
 .whatsapp-float {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  width: 60px;
-  height: 60px;
+  background: #25D366;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease;
   z-index: 999;
   text-decoration: none;
-  overflow: visible;
 }
 
 .whatsapp-float:hover {
-  transform: translateY(-5px) scale(1.1);
-  box-shadow: 0 12px 40px rgba(37, 211, 102, 0.7);
+  transform: scale(1.1);
 }
 
 .whatsapp-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   fill: white;
-  stroke: none;
 }
 
 .whatsapp-green-label {
   position: absolute;
   bottom: -32px;
   right: 0;
-  background: rgba(37, 211, 102, 0.95);
+  background: #25D366;
   color: white;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
   pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .whatsapp-float:hover .whatsapp-green-label {
   opacity: 1;
 }
 
-/* Mobile Responsive for Auth Buttons */
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .auth-btn {
-    padding: 14px 28px;
-    font-size: 15px;
-    min-width: 130px;
-    letter-spacing: 1px;
+    padding: 10px 22px;
+    font-size: 14px;
+    min-width: 110px;
   }
 }
 
 @media (max-width: 480px) {
   .auth-btn {
-    padding: 12px 24px;
-    font-size: 14px;
-    min-width: 120px;
-    letter-spacing: 0.8px;
-  }
-
-  .header-right {
-    gap: 12px;
+    padding: 9px 18px;
+    font-size: 13px;
+    min-width: 100px;
   }
 
   .whatsapp-float {
@@ -248,41 +114,7 @@
   }
 
   .whatsapp-icon {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
   }
-}
-
-@media (max-width: 360px) {
-  .auth-btn {
-    padding: 10px 20px;
-    font-size: 13px;
-    min-width: 110px;
-    letter-spacing: 0.6px;
-  }
-}/* Additional button enhancements */
-.auth-btn:hover {
-  z-index: 10;
-}
-
-.auth-btn:active {
-  transform: translateY(-3px) scale(0.98);
-  transition: all 0.1s ease;
-}
-
-/* Subtle floating animation for premium feel */
-@keyframes gentleFloat {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-2px) rotate(0.5deg); }
-  75% { transform: translateY(1px) rotate(-0.5deg); }
-}
-
-.auth-btn:nth-child(1) {
-  animation: gentleFloat 6s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
-.auth-btn:nth-child(2) {
-  animation: gentleFloat 6s ease-in-out infinite;
-  animation-delay: 2s;
 }

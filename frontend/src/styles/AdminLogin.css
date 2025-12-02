@@ -12,23 +12,14 @@
 .admin-login-card {
   background: white;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   max-width: 450px;
   width: 100%;
   padding: 48px 40px;
-  animation: slideUp 0.4s ease;
+  
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 .admin-login-header {
   text-align: center;
@@ -38,17 +29,10 @@
 .admin-shield {
   font-size: 64px;
   margin-bottom: 16px;
-  animation: pulse 2s ease-in-out infinite;
+  
 }
 
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-}
+
 
 .admin-login-header h2 {
   font-size: 32px;
@@ -129,12 +113,12 @@
   cursor: pointer;
   transition: all 0.3s;
   margin-top: 8px;
-  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .admin-login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
 
 .admin-login-btn:active:not(:disabled) {
@@ -193,3 +177,5 @@
     font-size: 14px;
   }
 }
+
+

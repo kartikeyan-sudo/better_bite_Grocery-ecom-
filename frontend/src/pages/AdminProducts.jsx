@@ -9,6 +9,7 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -131,6 +132,22 @@ export default function AdminProducts() {
     setShowModal(true)
   }
 
+  // Filter products based on search query
+  const filteredProducts = products.filter(product => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      product.name?.toLowerCase().includes(query) ||
+      product.category?.toLowerCase().includes(query) ||
+      product.description?.toLowerCase().includes(query) ||
+      product.weight?.toLowerCase().includes(query) ||
+      product.price?.toString().includes(query) ||
+      product.mrp?.toString().includes(query) ||
+      (product.inStock ? 'in stock' : 'out of stock').includes(query) ||
+      (product.recommended ? 'recommended' : '').includes(query)
+    )
+  })
+
   return (
     <div className="admin-container">
       <AdminNav />
@@ -139,18 +156,70 @@ export default function AdminProducts() {
         <div className="page-header">
           <div>
             <h2 className="page-title">Product Management</h2>
-            <p className="page-subtitle">Total Products: {products.length}</p>
+            <p className="page-subtitle">Total Products: {products.length} {searchQuery && `(Showing ${filteredProducts.length} matches)`}</p>
           </div>
           <button onClick={openAddModal} className="btn-primary">
             ➕ Add Product
           </button>
         </div>
 
+        {/* Search Bar */}
+        <div className="search-section" style={{ margin: '20px 0' }}>
+          <div className="search-container" style={{ maxWidth: '600px' }}>
+            <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', color: '#667eea' }}>
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search products by name, category, price, weight, stock status..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 16px 12px 48px',
+                border: '2px solid #e0e7ff',
+                borderRadius: '12px',
+                fontSize: '15px',
+                outline: 'none',
+                transition: 'all 0.2s ease'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e0e7ff'}
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '16px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: '#667eea',
+                  padding: '4px 8px'
+                }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
         {loading ? (
           <div className="loading">Loading products...</div>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="empty-state">
-            <p>No products yet. Add your first product!</p>
+            <p>{searchQuery ? `No products found matching "${searchQuery}"` : 'No products yet. Add your first product!'}</p>
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="btn-primary" style={{ marginTop: '12px' }}>
+                Clear Search
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -170,7 +239,7 @@ export default function AdminProducts() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map(product => (
+                  {filteredProducts.map(product => (
                     <tr key={product._id}>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -274,7 +343,7 @@ export default function AdminProducts() {
 
             {/* Mobile Card View */}
             <div className="product-cards">
-              {products.map(product => (
+              {filteredProducts.map(product => (
                 <div key={product._id} className="product-card-admin">
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                     <div style={{ flexShrink: 0 }}>
