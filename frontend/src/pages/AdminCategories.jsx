@@ -251,7 +251,7 @@ export default function AdminCategories() {
                     name="icon"
                     value={formData.icon}
                     onChange={handleChange}
-                    placeholder="🍎"
+                    placeholder=""
                   />
                 </div>
               </div>
