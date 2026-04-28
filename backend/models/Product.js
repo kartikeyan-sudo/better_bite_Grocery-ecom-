@@ -2,8 +2,8 @@ const mongoose = require('mongoose')
 
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  category: { type: Number, required: true },
-  image: { type: Number },
+  category: { type: String, required: true },
+  image: { type: String },
   // price is the current/offer/sale price
   price: { type: Number, required: true },
   // mrp is the original list price before discount
